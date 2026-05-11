@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #FDFBF7;
+    color: #1F1F1F;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: #F4B936;
+    color: #1F1F1F;
+  }
+}
+
+@layer components {
+  /* === ALGOLIA AUTOCOMPLETE === */
+  .aa-Form {
+    @apply bg-white border-2 border-ink rounded-2xl shadow-chunky-sm transition-all focus-within:shadow-chunky;
+  }
+
+  .aa-InputWrapper {
+    @apply px-4;
+  }
+
+  .aa-Input {
+    @apply w-full py-3 text-base font-medium text-ink placeholder:text-ink/40 bg-transparent border-0 outline-none;
+  }
+
+  .aa-InputWrapperPrefix {
+    @apply text-ink/60;
+  }
+
+  .aa-Panel {
+    @apply mt-2 bg-white border-2 border-ink rounded-2xl shadow-chunky-lg overflow-hidden;
+  }
+
+  .aa-PanelLayout {
+    @apply p-2 max-h-[70vh] overflow-y-auto;
+  }
+
+  .aa-SourceHeader {
+    @apply px-3 py-1 text-xs font-bold text-ink/50 uppercase tracking-wide;
+  }
+
+  .aa-Item {
+    @apply rounded-lg;
+  }
+
+  .aa-Item[aria-selected="true"] {
+    @apply bg-mustard-50;
+  }
+
+  /* Mobile detached overlay */
+  .aa-DetachedContainer {
+    @apply bg-cream;
+  }
+
+  .aa-DetachedFormContainer {
+    @apply bg-cream border-b-2 border-ink/10;
+  }
+}
+
+@layer utilities {
+  /* Container padrão */
+  .container-narrow {
+    @apply max-w-3xl mx-auto px-4;
+  }
+}
