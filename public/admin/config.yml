@@ -1,0 +1,76 @@
+# =====================================================
+# Decap CMS — Configuração do Painel Administrativo
+# DEPACO
+# =====================================================
+
+# Backend: usa GitHub via OAuth (Netlify Identity ou GitHub direto)
+# Opção mais simples: GitHub direto (vamos usar essa)
+backend:
+  name: github
+  repo: estudio-caft/depaco        # ⚠️ TROCAR: seu-usuario/nome-do-repo
+  branch: main
+  base_url: https://api.netlify.com   # OAuth via Netlify (grátis, sem precisar criar app GitHub)
+  auth_endpoint: auth
+
+# Pasta onde uploads de imagens serão salvos
+media_folder: 'public/uploads'
+public_folder: '/uploads'
+
+# Idioma do admin
+locale: 'pt'
+
+# Mensagem de commit personalizada quando salvar pelo CMS
+publish_mode: simple
+
+# =====================================================
+# COLEÇÕES (= tipos de conteúdo editáveis)
+# =====================================================
+collections:
+  # -------------------------------------------------
+  # COLEÇÃO 1: BLOG POSTS
+  # -------------------------------------------------
+  - name: 'blog'
+    label: '📝 Posts do Blog'
+    label_singular: 'Post'
+    folder: 'content/blog'
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    extension: md
+    format: frontmatter
+    summary: '{{title}} — {{date | date("DD/MM/YYYY")}}'
+    sortable_fields: ['date', 'title']
+    view_filters:
+      - label: 'Posts deste mês'
+        field: date
+        pattern: '2026'
+    fields:
+      - { label: 'Título', name: 'title', widget: 'string', required: true }
+      - { label: 'Descrição (SEO)', name: 'description', widget: 'text', required: true, hint: 'Aparece no Google e nas redes sociais. 140-160 caracteres ideais.' }
+      - { label: 'Data de publicação', name: 'date', widget: 'datetime', required: true, default: '', format: 'YYYY-MM-DD', date_format: 'DD/MM/YYYY', time_format: false }
+      - { label: 'Autor', name: 'author', widget: 'string', default: 'Equipe DEPACO' }
+      - { label: 'Imagem de capa', name: 'cover', widget: 'image', required: false, hint: 'Aparece no topo do post e como preview nas redes sociais' }
+      - { label: 'Tags', name: 'tags', widget: 'list', required: false, default: [], hint: 'Ex: dicas, parentalidade, criatividade' }
+      - { label: 'Personagem relacionado (slug)', name: 'related_personagem', widget: 'string', required: false, hint: 'Ex: stitch, homem-aranha. Usado pra linkar posts e desenhos.' }
+      - { label: 'Conteúdo', name: 'body', widget: 'markdown', required: true, hint: 'Texto completo do post. Use ## para subtítulos.' }
+
+  # -------------------------------------------------
+  # COLEÇÃO 2: CONFIGURAÇÕES GLOBAIS (opcional)
+  # Edite preço do pack, textos da home, etc.
+  # -------------------------------------------------
+  - name: 'configuracoes'
+    label: '⚙️ Configurações do Site'
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: 'pack'
+        label: 'Pack Premium'
+        file: 'content/config/pack.json'
+        fields:
+          - { label: 'Nome do pack', name: 'nome', widget: 'string' }
+          - { label: 'Descrição', name: 'descricao', widget: 'text' }
+          - { label: 'Quantidade de desenhos', name: 'total_desenhos', widget: 'number', value_type: 'int', min: 1 }
+          - { label: 'Preço (R$)', name: 'preco', widget: 'number', value_type: 'float', min: 0, step: 0.01 }
+          - { label: 'Preço "de" (riscado)', name: 'preco_de', widget: 'number', value_type: 'float', min: 0, step: 0.01, required: false }
+          - { label: 'URL do checkout', name: 'url_checkout', widget: 'string', hint: 'Link da Hotmart/Eduzz/Stripe' }
