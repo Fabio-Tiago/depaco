@@ -7,7 +7,7 @@
 # Opção mais simples: GitHub direto (vamos usar essa)
 backend:
   name: github
-  repo: estudio-caft/depaco        # ⚠️ TROCAR: seu-usuario/nome-do-repo
+  repo: Fabio-Tiago/depaco        # ⚠️ TROCAR: seu-usuario/nome-do-repo
   branch: main
   base_url: https://api.netlify.com   # OAuth via Netlify (grátis, sem precisar criar app GitHub)
   auth_endpoint: auth
