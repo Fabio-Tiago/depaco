@@ -9,6 +9,7 @@ import { DesenhoCard } from '@/components/DesenhoCard';
 import { OfertaCard } from '@/components/OfertaCard';
 import { capitalize } from '@/lib/utils';
 import type { AlgoliaDesenhoRecord } from '@/types';
+import { resolvePack } from '@/lib/oferta';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -57,6 +58,7 @@ export default async function DesenhoPage({ params }: PageProps) {
   const desenho = (await fetchDesenhoById(id)) as Partial<AlgoliaDesenhoRecord> | null;
 
   if (!desenho) notFound();
+  const pack = resolvePack(desenho);
 
   const relacionados = (await fetchDesenhosRelacionados(
     desenho.subject_slug || '',
@@ -180,7 +182,7 @@ export default async function DesenhoPage({ params }: PageProps) {
 
           {/* Coluna direita: oferta sticky */}
           <div className="hidden lg:block">
-            <OfertaCard variant="sidebar" />
+            <OfertaCard variant="sidebar" pack={pack} />
           </div>
         </div>
 
@@ -208,13 +210,13 @@ export default async function DesenhoPage({ params }: PageProps) {
 
         {/* Oferta compacta no fim (catch quem chegou até aqui) */}
         <section className="mb-12">
-          <OfertaCard variant="compact" />
+          <OfertaCard variant="compact" pack={pack}/>
         </section>
       </div>
 
       {/* Sticky mobile no rodapé */}
       <div className="h-20 lg:hidden" />
-      <OfertaCard variant="sticky-mobile" />
+      <OfertaCard variant="sticky-mobile" pack={pack}/>
     </>
   );
 }
