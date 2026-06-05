@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Sparkles, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
-import { PACK_PRINCIPAL, formatBRL, calcDesconto } from '@/lib/oferta';
+import { PACK_PADRAO, formatBRL, calcDesconto } from '@/lib/oferta';
+import type { PackOferta } from '@/types';
+
 
 /**
  * Card de oferta — aparece em sidebar (desktop) ou fixed footer (mobile).
@@ -11,10 +13,15 @@ import { PACK_PRINCIPAL, formatBRL, calcDesconto } from '@/lib/oferta';
  * Variante "compact" = banner horizontal (Home, listagens)
  * Variante "sticky-mobile" = barra fixa no rodapé em mobile
  */
-export function OfertaCard({ variant = 'sidebar' }: { variant?: 'sidebar' | 'compact' | 'sticky-mobile' }) {
-  const pack = PACK_PRINCIPAL;
-  const desconto = pack.preco_de ? calcDesconto(pack.preco_de, pack.preco) : 0;
 
+export function OfertaCard({
+  variant = 'sidebar',
+  pack = PACK_PADRAO,
+}: {
+  variant?: 'sidebar' | 'compact' | 'sticky-mobile';
+  pack?: PackOferta;
+}) {
+  const desconto = pack.preco_de ? calcDesconto(pack.preco_de, pack.preco) : 0;
   if (variant === 'sticky-mobile') {
     return (
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-cream border-t-2 border-ink shadow-[0_-8px_24px_-12px_rgba(31,31,31,0.2)]">
