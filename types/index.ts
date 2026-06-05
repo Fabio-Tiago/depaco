@@ -53,4 +53,8 @@ export interface PackOferta {
   preco_de?: number;
   url_checkout: string;
   preview_urls: string[];
+  /** Palavras-chave que ativam este pack (minúsculas, sem acento). Vazio = pack geral. */
+  keywords?: string[];
+  /** Marca o pack que aparece quando nenhum temático casa. */
+  isDefault?: boolean;
 }
