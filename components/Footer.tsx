@@ -16,18 +16,18 @@ export function Footer() {
           <div>
             <h3 className="font-display font-bold text-ink mb-3">Explorar</h3>
             <ul className="space-y-2 text-sm text-ink/70">
-              <li><Link href="/buscar" className="hover:text-coral">Buscar desenhos</Link></li>
-              <li><Link href="/categorias/personagem_filme" className="hover:text-coral">Personagens</Link></li>
-              <li><Link href="/categorias/animal" className="hover:text-coral">Animais</Link></li>
+              <li><Link href="/buscar" className="hover:text-coral">Ver desenhos</Link></li>
+              <li><Link href="/packs" className="hover:text-coral">Packs</Link></li>
               <li><Link href="/blog" className="hover:text-coral">Blog</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-display font-bold text-ink mb-3">Pack Premium</h3>
+            <h3 className="font-display font-bold text-ink mb-3">Packs</h3>
             <ul className="space-y-2 text-sm text-ink/70">
+              <li><Link href="/packs" className="hover:text-coral">Todos os packs</Link></li>
               <li><Link href="/pack/mega-pack-300" className="hover:text-coral">Mega Pack 300+</Link></li>
-              <li><Link href="/pack/mega-pack-300#faq" className="hover:text-coral">Perguntas frequentes</Link></li>
+              <li><Link href="/pack/pack-esporte" className="hover:text-coral">Pack Esporte</Link></li>
             </ul>
           </div>
 
