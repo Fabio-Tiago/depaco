@@ -24,16 +24,10 @@ export function Header() {
           {/* Nav desktop */}
           <nav className="hidden lg:flex items-center gap-1 text-sm font-bold text-ink/70">
             <Link
-              href="/categorias/personagem_filme"
+              href="/buscar"
               className="px-3 py-2 rounded-lg hover:bg-mustard-100 hover:text-ink transition-colors"
             >
-              Personagens
-            </Link>
-            <Link
-              href="/categorias/animal"
-              className="px-3 py-2 rounded-lg hover:bg-mustard-100 hover:text-ink transition-colors"
-            >
-              Animais
+              Ver desenhos
             </Link>
             <Link
               href="/blog"
@@ -42,10 +36,10 @@ export function Header() {
               Blog
             </Link>
             <Link
-              href="/pack/mega-pack-300"
+              href="/packs"
               className="ml-2 px-4 py-2 bg-terracotta text-cream rounded-xl font-bold border-2 border-ink shadow-chunky-sm hover:translate-y-[-2px] hover:shadow-chunky transition-all"
             >
-              Pack 300+
+              Packs
             </Link>
           </nav>
         </div>
