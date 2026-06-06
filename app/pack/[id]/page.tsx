@@ -1,16 +1,38 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { CheckCircle2, ShieldCheck, Zap, Sparkles, Star, Gift, Clock, MessageCircle } from 'lucide-react';
-import { PACK_PRINCIPAL, formatBRL, calcDesconto } from '@/lib/oferta';
+import { getPackById, PACKS, formatBRL, calcDesconto } from '@/lib/oferta';
 
-export const metadata: Metadata = {
-  title: `Mega Pack — ${PACK_PRINCIPAL.total_desenhos} desenhos para colorir`,
-  description: `Receba ${PACK_PRINCIPAL.total_desenhos} desenhos exclusivos em PDF. Pronto para imprimir.`,
-  alternates: { canonical: '/pack/mega-pack-300' },
-};
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
-export default function PackPage() {
-  const pack = PACK_PRINCIPAL;
+export const revalidate = 86400;
+
+/** Gera uma página estática para cada pack do catálogo. */
+export async function generateStaticParams() {
+  return PACKS.map((pack) => ({ id: pack.id }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const pack = getPackById(id);
+  if (!pack) return { title: 'Pack não encontrado' };
+
+  return {
+    title: `${pack.nome} — ${pack.total_desenhos} desenhos para colorir`,
+    description: `Receba ${pack.total_desenhos} desenhos exclusivos em PDF. Pronto para imprimir.`,
+    alternates: { canonical: `/pack/${pack.id}` },
+  };
+}
+
+export default async function PackPage({ params }: PageProps) {
+  const { id } = await params;
+  const pack = getPackById(id);
+
+  if (!pack) notFound();
+
   const desconto = pack.preco_de ? calcDesconto(pack.preco_de, pack.preco) : 0;
 
   const jsonLd = {
