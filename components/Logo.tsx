@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import logoHorizontal from '@/public/logo-horizontal.webp';
+import logoHorizontal from '@/public/logo-horizontal.png';
 
 /**
  * Logo DEPACO — imagem horizontal (mascote lápis + wordmark).
