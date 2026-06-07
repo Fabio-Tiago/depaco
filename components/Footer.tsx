@@ -42,8 +42,8 @@ export function Footer() {
         </div>
 
         <div className="pt-6 border-t border-ink/10 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-ink/50">
-          <p>© {new Date().getFullYear()} DEPACO — Desenhos para colorir. Todos os direitos reservados.</p>
-          <p>Feito com carinho para a criançada brasileira ✨</p>
+          <p>© {new Date().getFullYear()} DEPACO — Desenhos para colorir. <a href="https://fabiotiago.com.br" target="_blank" rel="noopener noreferrer" className="underline hover:text-ink/80">Feito por Fábio Tiago</a></p>
+          <p>Feito por um pai com carinho para a criançada brasileira ✨</p>
         </div>
       </div>
     </footer>
