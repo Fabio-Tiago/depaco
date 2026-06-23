@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { MessageCircle, Instagram, Youtube } from 'lucide-react';
 
