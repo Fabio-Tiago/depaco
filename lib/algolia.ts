@@ -112,3 +112,33 @@ export async function fetchPersonagensUnicos(): Promise<
     return [];
   }
 }
+
+/**
+ * Busca desenhos de um personagem para o carrossel do blog.
+ * Server-side, poucos campos, otimizado para não pesar.
+ */
+export async function fetchDesenhosCarrossel(subjectSlug: string, limit = 10) {
+  if (!subjectSlug) return [];
+  try {
+    const { results } = await searchClient.search({
+      requests: [
+        {
+          indexName: INDEX_NAME,
+          query: '',
+          filters: `subject_slug:${subjectSlug}`,
+          hitsPerPage: limit,
+          attributesToRetrieve: ['objectID', 'personagem', 'pose', 'url_imagem'],
+        },
+      ],
+    });
+    const first = results[0] as { hits?: unknown[] };
+    return (first?.hits || []) as Array<{
+      objectID: string;
+      personagem: string;
+      pose: string;
+      url_imagem: string;
+    }>;
+  } catch {
+    return [];
+  }
+}
