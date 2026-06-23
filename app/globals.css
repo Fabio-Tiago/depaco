@@ -75,3 +75,20 @@
     @apply max-w-3xl mx-auto px-4;
   }
 }
+
+/* Carrossel do blog — scroll lento contínuo */
+@keyframes blog-carrossel-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.blog-carrossel-track {
+  animation: blog-carrossel-scroll 40s linear infinite;
+}
+.blog-carrossel:hover .blog-carrossel-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .blog-carrossel-track {
+    animation: none;
+  }
+}
