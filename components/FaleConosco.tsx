@@ -1,3 +1,5 @@
+'use client'
+
 import { MessageCircle, Instagram, Youtube } from 'lucide-react';
 
 export function FaleConosco() {
