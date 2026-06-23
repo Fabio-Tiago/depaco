@@ -29,6 +29,8 @@ export function getAllBlogPosts(): BlogPost[] {
       tags: data.tags || [],
       cover: data.cover || '',
       related_personagem: data.related_personagem || '',
+      video_url: data.video_url || '',
+      video_legenda: data.video_legenda || '',
       content,
     } as BlogPost;
   });
@@ -53,6 +55,8 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
     tags: data.tags || [],
     cover: data.cover || '',
     related_personagem: data.related_personagem || '',
+    video_url: data.video_url || '',
+    video_legenda: data.video_legenda || '',
     content,
   };
 }
