@@ -4,34 +4,49 @@ description: 'Dicas práticas para pais que querem aproveitar a hora de colorir 
 date: '2026-05-09'
 author: 'Equipe DEPACO'
 tags: ['dicas', 'parentalidade', 'criatividade']
+related_personagem: 'capivara'
+video_url: 'https://www.youtube.com/embed/VIDEO_ID'
+video_legenda: 'Veja como tornar a hora de colorir mais divertida'
 ---
 
-Colorir vai muito além de só passar lápis no papel. É um momento incrível de conexão, foco e desenvolvimento da criatividade. Mas você já se pegou na frente de mil opções e sem saber qual escolher pro seu pequeno? A gente te ajuda.
+Colorir vai muito além de passar lápis no papel. É um momento de conexão, foco e desenvolvimento da criatividade.
+
+Mas você já travou na frente de mil opções, sem saber qual escolher? A gente te ajuda a decidir.
 
 ## Comece pela idade
 
-A primeira coisa é respeitar a fase da criança:
+A primeira coisa é respeitar a fase em que a criança está agora.
 
-- **2 a 4 anos**: prefira desenhos com **traços bem grossos**, áreas grandes pra colorir e poucos detalhes. Nessa fase a coordenação motora ainda está se desenvolvendo, então áreas pequenas só geram frustração.
-- **5 a 7 anos**: já dá pra introduzir desenhos com **mais detalhes**, mas ainda com áreas confortáveis. Aqui as crianças começam a se importar com "ficar dentro da linha".
-- **8 a 12 anos**: liberdade total. Podem encarar **desenhos complexos**, mandalas, paisagens detalhadas. É a fase do "quero o desafio".
+Crianças de **2 a 4 anos** preferem traços bem grossos, áreas grandes e poucos detalhes. A coordenação motora ainda está em formação.
+
+---BLOCO---
+
+Já dos **5 aos 7 anos**, dá pra introduzir mais detalhes, mantendo áreas confortáveis. É quando elas começam a querer ficar dentro da linha.
+
+Dos **8 aos 12 anos**, é liberdade total. Encaram desenhos complexos, mandalas e paisagens. É a fase do "quero o desafio".
 
 ## Conecte com o interesse atual
 
-Criança ama colorir o que ela ama. Se seu filho tá obcecado com Homem-Aranha, busca um desenho dele. Se ama dinossauro, vai de T-Rex. Esse momento de identificação faz toda diferença no engajamento.
+Criança ama colorir aquilo que ela já ama no dia a dia.
 
-## A magia do "pack temático"
+Se seu filho é fã do Homem-Aranha, busque um desenho dele. Se ama dinossauro, vá de T-Rex. A identificação muda tudo.
 
-Em vez de só um desenho solto, monta um pacote com 5-10 desenhos do mesmo tema. Por exemplo: "tarde da capivara" com várias poses diferentes do bichinho. A criança fica horas entretida e ainda cria uma narrativa entre os desenhos.
+## A magia do pack temático
+
+Em vez de um desenho solto, monte um pacote com 5 a 10 do mesmo tema.
+
+Por exemplo: uma "tarde da capivara", com várias poses do bichinho. A criança entretém-se por horas e cria a própria narrativa.
 
 ## Dica de ouro: cole na parede
 
-Quando terminar de colorir, **valoriza o trabalho**. Cola na geladeira, na porta do quarto, em um cantinho da parede. Isso fortalece a autoestima e estimula a criança a querer fazer mais.
+Quando terminar, valorize o trabalho da criança de forma visível.
+
+Cole na geladeira, na porta do quarto ou num cantinho. Isso fortalece a autoestima e a vontade de fazer mais.
 
 ## E o material?
 
-Não precisa investir muito. Lápis de cor comum já entrega o resultado. Pra crianças menores, **giz de cera** é mais fácil de segurar. Tinta guache é incrível mas pede supervisão (e jornal embaixo da mesa, kkk).
+Não precisa investir muito para começar bem em casa.
 
----
+Lápis de cor comum já entrega ótimo resultado. Para os menores, giz de cera é mais fácil de segurar. Guache é incrível, mas pede supervisão.
 
-**Quer começar agora?** Dá uma olhada no nosso [acervo de desenhos](/buscar) e escolhe o personagem favorito do seu pequeno. É grátis e dá pra imprimir na hora.
+**Quer começar agora?** Veja nosso [acervo de desenhos](/buscar) e escolha o personagem favorito do seu pequeno. É grátis e dá pra imprimir na hora.
