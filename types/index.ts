@@ -42,8 +42,8 @@ export interface BlogPost {
   cover?: string;
   content: string;
   related_personagem?: string;
-  video_url?: string;   // URL do YouTube/Vimeo (embed) — opcional
-  video_legenda?: string; // legenda curta sob o vídeo — opcional
+  video_url?: string;
+  video_legenda?: string;
 }
 
 export interface PackOferta {
