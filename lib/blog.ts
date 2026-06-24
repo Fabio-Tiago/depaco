@@ -68,3 +68,14 @@ export function getAllBlogSlugs(): string[] {
     .filter((f) => f.endsWith('.md'))
     .map((f) => f.replace(/\.md$/, ''));
 }
+
+/**
+ * Divide o conteúdo do post em partes usando o marcador ---BLOCO---.
+ * Retorna sempre um array; se não houver marcador, devolve [conteúdo].
+ */
+export function splitBlogContent(content: string): string[] {
+  return content
+    .split(/^---BLOCO---$/m)
+    .map((parte) => parte.trim())
+    .filter(Boolean);
+}
