@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getBlogPostBySlug, getAllBlogSlugs } from '@/lib/blog';
+import { getBlogPostBySlug, getAllBlogSlugs, splitBlogContent } from '@/lib/blog';
 import { fetchDesenhosCarrossel } from '@/lib/algolia';
 import { OfertaCard } from '@/components/OfertaCard';
 import { BlogCarrossel } from '@/components/BlogCarrossel';
@@ -39,12 +38,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+const proseClasses =
+  'prose prose-ink prose-lg max-w-none prose-headings:font-display prose-headings:text-ink prose-p:leading-relaxed prose-a:text-coral prose-a:no-underline hover:prose-a:underline';
+
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = getBlogPostBySlug(slug);
   if (!post) notFound();
 
-  // Busca desenhos pro carrossel (server-side, indexável)
+  // Divide o texto em 2 partes pelo marcador ---BLOCO---
+  const partes = splitBlogContent(post.content);
+  const parte1 = partes[0] || '';
+  const parte2 = partes.slice(1).join('\n\n');
+
+  // Carrossel: desenhos do personagem relacionado (server-side)
   const desenhosCarrossel = await fetchDesenhosCarrossel(post.related_personagem || '', 10);
 
   const jsonLd = {
@@ -83,26 +90,35 @@ export default async function BlogPostPage({ params }: PageProps) {
           {post.title}
         </h1>
 
-        {/* Descrição */}
-        <p className="text-lg text-ink/70 mb-6">{post.description}</p>
+        {/* Descrição / linha fina */}
+        <p className="text-lg text-ink/70 mb-8">{post.description}</p>
 
-        {/* Carrossel de desenhos (logo no topo, como na imagem) */}
+        {/* PARTE 1 do texto */}
+        {parte1 && (
+          <div className={proseClasses}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{parte1}</ReactMarkdown>
+          </div>
+        )}
+
+        {/* Carrossel de desenhos */}
         <BlogCarrossel desenhos={desenhosCarrossel} />
 
-        {/* Banner 2 — horizontal compacto */}
+        {/* Banner compacto (Banner 2) */}
         <BannerOfertaHorizontal />
 
-        {/* Conteúdo do post */}
-        <div className="prose prose-ink prose-lg max-w-none prose-headings:font-display prose-headings:text-ink prose-p:leading-relaxed prose-a:text-coral prose-a:no-underline hover:prose-a:underline">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
-        </div>
+        {/* PARTE 2 do texto */}
+        {parte2 && (
+          <div className={`${proseClasses} mt-8`}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{parte2}</ReactMarkdown>
+          </div>
+        )}
 
-        {/* Player de vídeo (se o post tiver) */}
+        {/* Vídeo (se houver) */}
         {post.video_url && (
           <VideoEmbed url={post.video_url} legenda={post.video_legenda} titulo={post.title} />
         )}
 
-        {/* Banner grande no fim (o OfertaCard que já existia) */}
+        {/* Banner grande no fim */}
         <div className="mt-12">
           <OfertaCard variant="compact" />
         </div>
