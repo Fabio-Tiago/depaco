@@ -32,6 +32,11 @@ export interface Personagem {
   imagem_thumb?: string;
 }
 
+export interface FaqItem {
+  pergunta: string;
+  resposta: string;
+}
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -44,6 +49,7 @@ export interface BlogPost {
   related_personagem?: string;
   video_url?: string;
   video_legenda?: string;
+  faq?: FaqItem[];
 }
 
 export interface PackOferta {
