@@ -3,12 +3,12 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getBlogPostBySlug, getAllBlogSlugs, splitBlogContent } from '@/lib/blog';
+import { getBlogPostBySlug, getAllBlogSlugs, parseBlogSegments } from '@/lib/blog';
 import { fetchDesenhosCarrossel } from '@/lib/algolia';
-import { OfertaCard } from '@/components/OfertaCard';
 import { BlogCarrossel } from '@/components/BlogCarrossel';
 import { BannerOfertaHorizontal } from '@/components/BannerOfertaHorizontal';
 import { VideoEmbed } from '@/components/VideoEmbed';
+import { OfertaCard } from '@/components/OfertaCard';
 import { FaleConosco } from '@/components/FaleConosco';
 
 interface PageProps {
@@ -52,13 +52,13 @@ export default async function BlogPostPage({ params }: PageProps) {
   const post = getBlogPostBySlug(slug);
   if (!post) notFound();
 
-  // Divide o texto em 2 partes pelo marcador ---BLOCO---
-  const partes = splitBlogContent(post.content);
-  const parte1 = partes[0] || '';
-  const parte2 = partes.slice(1).join('\n\n');
+  const segmentos = parseBlogSegments(post.content);
 
-  // Carrossel: desenhos do personagem relacionado (server-side)
-  const desenhosCarrossel = await fetchDesenhosCarrossel(post.related_personagem || '', 10);
+  // Carrega o carrossel só se algum segmento for do tipo carrossel
+  const precisaCarrossel = segmentos.some((s) => s.tipo === 'carrossel');
+  const desenhosCarrossel = precisaCarrossel
+    ? await fetchDesenhosCarrossel(post.related_personagem || '', 10)
+    : [];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -96,38 +96,38 @@ export default async function BlogPostPage({ params }: PageProps) {
           {post.title}
         </h1>
 
-        {/* Descrição / linha fina */}
+        {/* Descrição */}
         <p className="text-lg text-ink/70 mb-8">{post.description}</p>
 
-        {/* PARTE 1 do texto */}
-        {parte1 && (
-          <div className={proseClasses}>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{parte1}</ReactMarkdown>
-          </div>
-        )}
-
-        {/* Carrossel de desenhos */}
-        <BlogCarrossel desenhos={desenhosCarrossel} />
-
-        {/* Banner compacto (Banner 2) */}
-        <BannerOfertaHorizontal />
-
-        {/* PARTE 2 do texto */}
-        {parte2 && (
-          <div className={`${proseClasses} mt-8`}>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{parte2}</ReactMarkdown>
-          </div>
-        )}
-
-        {/* Vídeo (se houver) */}
-        {post.video_url && (
-          <VideoEmbed url={post.video_url} legenda={post.video_legenda} titulo={post.title} />
-        )}
-
-        {/* Banner grande no fim */}
-        <div className="mt-12">
-          <OfertaCard variant="compact" />
-        </div>
+        {/* Corpo: segmentos em ordem */}
+        {segmentos.map((seg, i) => {
+          if (seg.tipo === 'texto') {
+            return (
+              <div key={i} className={proseClasses}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{seg.conteudo}</ReactMarkdown>
+              </div>
+            );
+          }
+          if (seg.tipo === 'carrossel') {
+            return <BlogCarrossel key={i} desenhos={desenhosCarrossel} />;
+          }
+          if (seg.tipo === 'video') {
+            return post.video_url ? (
+              <VideoEmbed key={i} url={post.video_url} legenda={post.video_legenda} titulo={post.title} />
+            ) : null;
+          }
+          if (seg.tipo === 'banner') {
+            return <BannerOfertaHorizontal key={i} />;
+          }
+          if (seg.tipo === 'oferta') {
+            return (
+              <div key={i} className="my-12">
+                <OfertaCard variant="compact" />
+              </div>
+            );
+          }
+          return null;
+        })}
 
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
@@ -140,7 +140,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Fale Conosco + redes sociais */}
+        {/* Fale Conosco — sempre no fim */}
         <FaleConosco />
       </article>
     </>
