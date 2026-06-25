@@ -71,6 +71,22 @@ export default async function BlogPostPage({ params }: PageProps) {
     image: post.cover || undefined,
   };
 
+  const faqJsonLd =
+    post.faq && post.faq.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: post.faq.map((item) => ({
+            '@type': 'Question',
+            name: item.pergunta,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: item.resposta,
+            },
+          })),
+        }
+      : null;
+
   return (
     <>
       <script
@@ -78,6 +94,12 @@ export default async function BlogPostPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {faqJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      ) : null}
       <article className="container-narrow py-10">
         {/* Breadcrumb */}
         <nav className="text-sm text-ink/60 mb-6">
@@ -128,6 +150,31 @@ export default async function BlogPostPage({ params }: PageProps) {
           }
           return null;
         })}
+
+        {/* FAQ visível — gerado do mesmo array que alimenta o Schema */}
+        {post.faq && post.faq.length > 0 ? (
+          <section className="mt-12">
+            <h2 className="font-display text-3xl font-bold text-ink mb-6">
+              Perguntas frequentes
+            </h2>
+            <div className="space-y-4">
+              {post.faq.map((item, i) => (
+                <details
+                  key={i}
+                  className="group bg-white border-2 border-ink rounded-2xl shadow-chunky-sm overflow-hidden"
+                >
+                  <summary className="cursor-pointer list-none px-5 py-4 font-display font-bold text-ink flex items-center justify-between gap-3">
+                    {item.pergunta}
+                    <span className="text-coral text-xl transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <div className="px-5 pb-4 text-ink/80 leading-relaxed">
+                    {item.resposta}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
