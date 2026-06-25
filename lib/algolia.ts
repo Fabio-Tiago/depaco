@@ -41,7 +41,7 @@ export async function fetchDesenhosRelacionados(
         {
           indexName: INDEX_NAME,
           query: '',
-          filters: `subject_slug:${subjectSlug} AND NOT objectID:${exceptId}`,
+          filters: `subject_slug:"${subjectSlug}" AND NOT objectID:"${exceptId}"`,
           hitsPerPage: limit,
         },
       ],
@@ -125,7 +125,7 @@ export async function fetchDesenhosCarrossel(subjectSlug: string, limit = 10) {
         {
           indexName: INDEX_NAME,
           query: '',
-          filters: `subject_slug:${subjectSlug}`,
+          filters: `subject_slug:"${subjectSlug}"`,
           hitsPerPage: limit,
           attributesToRetrieve: ['objectID', 'personagem', 'pose', 'url_imagem'],
         },
@@ -141,4 +141,32 @@ export async function fetchDesenhosCarrossel(subjectSlug: string, limit = 10) {
   } catch {
     return [];
   }
+}
+
+/**
+ * Resolve a imagem de capa (og:image) de um post do blog.
+ * Ordem de prioridade:
+ *   1. cover explícito no frontmatter (se algum dia for definido)
+ *   2. um desenho do acervo, buscado pelo related_personagem (Algolia)
+ *   3. fallback padrão da marca (env NEXT_PUBLIC_OG_IMAGE_FALLBACK)
+ * Retorna string vazia se nada for encontrado (template trata).
+ */
+export async function resolverCapaPost(opts: {
+  cover?: string;
+  related_personagem?: string;
+}): Promise<string> {
+  if (opts.cover) return opts.cover;
+
+  if (opts.related_personagem) {
+    try {
+      const desenhos = await fetchDesenhosCarrossel(opts.related_personagem, 1);
+      if (desenhos.length && desenhos[0]?.url_imagem) {
+        return desenhos[0].url_imagem;
+      }
+    } catch {
+      // segue para o fallback
+    }
+  }
+
+  return process.env.NEXT_PUBLIC_OG_IMAGE_FALLBACK || '';
 }
