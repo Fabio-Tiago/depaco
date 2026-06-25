@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Sparkles, Palette, Printer, Heart } from 'lucide-react';
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { OfertaCard } from '@/components/OfertaCard';
-import { fetchPersonagensUnicos } from '@/lib/algolia';
+import { fetchPersonagensUnicos, resolverCapaPost } from '@/lib/algolia';
 import { getAllBlogPosts } from '@/lib/blog';
 import { capitalize } from '@/lib/utils';
 
@@ -20,10 +20,21 @@ const CATEGORIAS_DESTAQUE = [
 
 export default async function HomePage() {
   // Em paralelo: personagens + posts recentes
-  const [personagens, posts] = await Promise.all([
+  const [personagens, postsRaw] = await Promise.all([
     fetchPersonagensUnicos(),
     Promise.resolve(getAllBlogPosts().slice(0, 3)),
   ]);
+
+  // Resolve a capa de cada post (acervo via related_personagem, ou fallback)
+  const posts = await Promise.all(
+    postsRaw.map(async (post) => ({
+      ...post,
+      capa: await resolverCapaPost({
+        cover: post.cover,
+        related_personagem: post.related_personagem,
+      }),
+    }))
+  );
 
   const personagensDestaque = personagens.slice(0, 12);
 
@@ -191,12 +202,12 @@ export default async function HomePage() {
                 className="block bg-white border-2 border-ink rounded-2xl overflow-hidden shadow-chunky-sm hover:shadow-chunky hover:-translate-y-1 transition-all"
               >
                 <div className="aspect-video bg-mustard-100 relative">
-                  {post.cover && (
+                  {post.capa && (
                     <Image
-                      src={post.cover}
+                      src={post.capa}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-contain p-3"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   )}
