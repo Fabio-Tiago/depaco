@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { getAllBlogPosts } from '@/lib/blog';
+import { resolverCapaPost } from '@/lib/algolia';
 import { OfertaCard } from '@/components/OfertaCard';
 
 export const metadata: Metadata = {
@@ -10,8 +11,22 @@ export const metadata: Metadata = {
   alternates: { canonical: '/blog' },
 };
 
-export default function BlogPage() {
+// ISR — regenera a cada hora para refletir capas do acervo (Algolia)
+export const revalidate = 3600;
+
+export default async function BlogPage() {
   const posts = getAllBlogPosts();
+
+  // Resolve a capa de cada post (acervo via related_personagem, ou fallback)
+  const postsComCapa = await Promise.all(
+    posts.map(async (post) => ({
+      ...post,
+      capa: await resolverCapaPost({
+        cover: post.cover,
+        related_personagem: post.related_personagem,
+      }),
+    }))
+  );
 
   return (
     <div className="container mx-auto px-4 py-10">
@@ -22,7 +37,7 @@ export default function BlogPage() {
         Dicas, ideias e curiosidades sobre desenhos para colorir, atividades infantis e diversão garantida.
       </p>
 
-      {posts.length === 0 ? (
+      {postsComCapa.length === 0 ? (
         <div className="bg-white border-2 border-ink rounded-2xl p-12 text-center shadow-chunky-sm">
           <p className="text-ink/60 mb-2">📝 Em breve, novos posts!</p>
           <p className="text-sm text-ink/40">
@@ -31,19 +46,19 @@ export default function BlogPage() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {posts.map((post) => (
+          {postsComCapa.map((post) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
               className="bg-white border-2 border-ink rounded-2xl overflow-hidden shadow-chunky-sm hover:shadow-chunky hover:-translate-y-1 transition-all"
             >
-              {post.cover ? (
+              {post.capa ? (
                 <div className="aspect-video relative bg-mustard-100">
                   <Image
-                    src={post.cover}
+                    src={post.capa}
                     alt={post.title}
                     fill
-                    className="object-cover"
+                    className="object-contain p-3"
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
