@@ -73,9 +73,47 @@ export function getAllBlogSlugs(): string[] {
  * Divide o conteúdo do post em partes usando o marcador ---BLOCO---.
  * Retorna sempre um array; se não houver marcador, devolve [conteúdo].
  */
-export function splitBlogContent(content: string): string[] {
-  return content
-    .split(/^---BLOCO---$/m)
-    .map((parte) => parte.trim())
-    .filter(Boolean);
+/** Tipos de bloco que podem aparecer no corpo do post. */
+export type BlogSegmento =
+  | { tipo: 'texto'; conteudo: string }
+  | { tipo: 'carrossel' }
+  | { tipo: 'video' }
+  | { tipo: 'banner' }
+  | { tipo: 'oferta' };
+
+/**
+ * Quebra o conteúdo do post em segmentos, detectando marcadores
+ * [[CARROSSEL]], [[VIDEO]], [[BANNER]], [[OFERTA]] em linha própria.
+ * Tudo entre marcadores vira um segmento de texto (markdown).
+ */
+export function parseBlogSegments(content: string): BlogSegmento[] {
+  const linhas = content.split('\n');
+  const segmentos: BlogSegmento[] = [];
+  let buffer: string[] = [];
+
+  const flushTexto = () => {
+    const txt = buffer.join('\n').trim();
+    if (txt) segmentos.push({ tipo: 'texto', conteudo: txt });
+    buffer = [];
+  };
+
+  const marcadores: Record<string, BlogSegmento['tipo']> = {
+    '[[CARROSSEL]]': 'carrossel',
+    '[[VIDEO]]': 'video',
+    '[[BANNER]]': 'banner',
+    '[[OFERTA]]': 'oferta',
+  };
+
+  for (const linha of linhas) {
+    const chave = linha.trim().toUpperCase();
+    if (marcadores[chave]) {
+      flushTexto();
+      segmentos.push({ tipo: marcadores[chave] } as BlogSegmento);
+    } else {
+      buffer.push(linha);
+    }
+  }
+  flushTexto();
+
+  return segmentos;
 }
