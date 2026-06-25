@@ -31,6 +31,7 @@ export function getAllBlogPosts(): BlogPost[] {
       related_personagem: data.related_personagem || '',
       video_url: data.video_url || '',
       video_legenda: data.video_legenda || '',
+      faq: Array.isArray(data.faq) ? data.faq : [],
       content,
     } as BlogPost;
   });
@@ -57,6 +58,7 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
     related_personagem: data.related_personagem || '',
     video_url: data.video_url || '',
     video_legenda: data.video_legenda || '',
+    faq: Array.isArray(data.faq) ? data.faq : [],
     content,
   };
 }
