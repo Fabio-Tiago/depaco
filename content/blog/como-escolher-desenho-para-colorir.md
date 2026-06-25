@@ -7,6 +7,19 @@ tags: ['dicas', 'parentalidade', 'criatividade']
 related_personagem: 'capivara'
 video_url: 'https://www.youtube.com/embed/o0GmTRm67rw'
 video_legenda: 'Veja como tornar a hora de colorir mais divertida'
+faq:
+  - pergunta: 'O que é um desenho para colorir?'
+    resposta: 'É uma ilustração feita só com contornos, em preto e branco, projetada para ser preenchida com cores. O traço já vem pronto e a criança completa a imagem pintando as áreas com lápis, giz, caneta ou tinta. Une diversão, concentração e desenvolvimento da coordenação motora.'
+  - pergunta: 'Como se colore um desenho?'
+    resposta: 'O ideal é começar pelas áreas maiores e deixar os detalhes por último, para não borrar. Oriente a criança a fazer movimentos leves na mesma direção dentro de cada área e a fechar o contorno antes de preencher o meio, assim fica mais fácil ficar dentro da linha. Não existe certo ou errado nas cores: deixar a criança escolher livremente é o que estimula a criatividade.'
+  - pergunta: 'Que tipos de desenho para colorir existem?'
+    resposta: 'Os principais são desenhos de personagens (heróis, princesas, bichinhos), educativos (letras, números, animais), de cenas (paisagens, fundo do mar), mandalas e padrões, e desenhos livres ou abstratos. O melhor tipo depende da idade e do objetivo: personagens engajam os pequenos, mandalas relaxam os maiores.'
+  - pergunta: 'Qual o nome do papel A4 durinho para imprimir?'
+    resposta: 'É o sulfite de gramatura alta. O comum do dia a dia tem 75 g/m²; o durinho costuma ser o de 120 g/m² ou mais, mais firme e ideal para tinta e caneta, porque não enruga nem deixa a cor vazar para o outro lado. Para emoldurar, o couché deixa as cores ainda mais vivas.'
+  - pergunta: 'Qual a melhor idade para começar a colorir?'
+    resposta: 'A partir dos 2 anos a criança já pode começar, com desenhos de traços grossos e áreas grandes. Não há idade máxima: colorir acompanha o desenvolvimento e até adultos se beneficiam, como forma de relaxamento e foco.'
+  - pergunta: 'Colorir ajuda no desenvolvimento da criança?'
+    resposta: 'Sim. Colorir desenvolve a coordenação motora fina, a concentração, o reconhecimento de cores e a paciência. Também é uma ferramenta de expressão emocional e um momento de conexão quando feito junto com os pais, combinando aprendizado e afeto na mesma atividade.'
 ---
 
 Colorir vai muito além de passar lápis no papel. É um momento de conexão, foco e desenvolvimento da criatividade — um dos poucos em que a criança desacelera e se concentra de verdade.
@@ -74,32 +87,6 @@ Cole na geladeira, na porta do quarto ou num cantinho. Isso fortalece a autoesti
 Não precisa investir muito para começar bem em casa.
 
 Lápis de cor comum já entrega ótimo resultado. Para os menores, giz de cera é mais fácil de segurar. Guache é incrível pela vivacidade, mas pede supervisão e um jornal embaixo da mesa. O importante é deixar o material à mão: criança com lápis por perto colore mais.
-
-## Perguntas frequentes
-
-### O que é um desenho para colorir?
-
-É uma ilustração feita só com contornos, em preto e branco, projetada para ser preenchida com cores. O traço já vem pronto e a criança completa a imagem pintando as áreas com lápis, giz, caneta ou tinta. Une diversão, concentração e desenvolvimento da coordenação motora.
-
-### Como se colore um desenho?
-
-O ideal é começar pelas áreas maiores e deixar os detalhes por último, para não borrar. Oriente a criança a fazer movimentos leves na mesma direção dentro de cada área e a "fechar o contorno" antes de preencher o meio — assim fica mais fácil ficar dentro da linha. Não existe certo ou errado nas cores: deixar a criança escolher livremente é o que estimula a criatividade.
-
-### Que tipos de desenho para colorir existem?
-
-Os principais são desenhos de personagens (heróis, princesas, bichinhos), educativos (letras, números, animais), de cenas (paisagens, fundo do mar), mandalas e padrões, e desenhos livres ou abstratos. O melhor tipo depende da idade e do objetivo: personagens engajam os pequenos, mandalas relaxam os maiores.
-
-### Qual o nome do papel A4 "durinho" para imprimir?
-
-É o sulfite de gramatura alta. O comum do dia a dia tem 75 g/m²; o "durinho" costuma ser o de 120 g/m² ou mais, mais firme e ideal para tinta e caneta, porque não enruga nem deixa a cor vazar para o outro lado. Para emoldurar, o couché deixa as cores ainda mais vivas.
-
-### Qual a melhor idade para começar a colorir?
-
-A partir dos 2 anos a criança já pode começar, com desenhos de traços grossos e áreas grandes. Não há idade máxima: colorir acompanha o desenvolvimento e até adultos se beneficiam, como forma de relaxamento e foco.
-
-### Colorir ajuda no desenvolvimento da criança?
-
-Sim. Colorir desenvolve a coordenação motora fina, a concentração, o reconhecimento de cores e a paciência. Também é uma ferramenta de expressão emocional e um momento de conexão quando feito junto com os pais — combina aprendizado e afeto na mesma atividade.
 
 [[OFERTA]]
 
