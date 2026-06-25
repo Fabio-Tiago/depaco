@@ -15,6 +15,9 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+// ISR — regenera a cada hora para refletir mudanças no Algolia (carrossel)
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   return getAllBlogSlugs().map((slug) => ({ slug }));
 }
