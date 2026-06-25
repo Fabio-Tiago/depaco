@@ -39,7 +39,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 const proseClasses =
-  'prose prose-ink prose-lg max-w-none prose-headings:font-display prose-headings:text-ink prose-p:leading-relaxed prose-a:text-coral prose-a:no-underline hover:prose-a:underline';
+  'prose prose-ink prose-lg max-w-none ' +
+  'prose-headings:font-display prose-headings:text-ink ' +
+  'prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-4 ' +
+  'prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-3 ' +
+  'prose-p:leading-relaxed prose-p:my-5 ' +
+  'prose-ul:my-5 prose-li:my-2 ' +
+  'prose-a:text-coral prose-a:no-underline hover:prose-a:underline';
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
