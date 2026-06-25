@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getBlogPostBySlug, getAllBlogSlugs, parseBlogSegments } from '@/lib/blog';
-import { fetchDesenhosCarrossel } from '@/lib/algolia';
+import { fetchDesenhosCarrossel, resolverCapaPost } from '@/lib/algolia';
 import { BlogCarrossel } from '@/components/BlogCarrossel';
 import { BannerOfertaHorizontal } from '@/components/BannerOfertaHorizontal';
 import { VideoEmbed } from '@/components/VideoEmbed';
@@ -27,6 +27,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const post = getBlogPostBySlug(slug);
   if (!post) return { title: 'Post não encontrado' };
 
+  const capa = await resolverCapaPost({
+    cover: post.cover,
+    related_personagem: post.related_personagem,
+  });
+
   return {
     title: post.title,
     description: post.description,
@@ -35,7 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: post.description,
       type: 'article',
       publishedTime: post.date,
-      images: post.cover ? [post.cover] : [],
+      images: capa ? [capa] : [],
     },
     alternates: { canonical: `/blog/${slug}` },
   };
