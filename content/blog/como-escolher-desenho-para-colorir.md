@@ -5,7 +5,7 @@ date: '2026-05-09'
 author: 'Equipe DEPACO'
 tags: ['dicas', 'parentalidade', 'criatividade']
 related_personagem: 'capivara'
-video_url: 'https://www.youtube.com/embed/VIDEO_ID'
+video_url: 'https://www.youtube.com/embed/o0GmTRm67rw'
 video_legenda: 'Veja como tornar a hora de colorir mais divertida'
 ---
 
