@@ -13,17 +13,21 @@ Colorir vai muito além de passar lápis no papel. É um momento de conexão, fo
 
 Mas você já travou na frente de mil opções, sem saber qual escolher? A gente te ajuda a decidir.
 
+[[VIDEO]]
+
 ## Comece pela idade
 
 A primeira coisa é respeitar a fase em que a criança está agora.
 
 Crianças de **2 a 4 anos** preferem traços bem grossos, áreas grandes e poucos detalhes. A coordenação motora ainda está em formação.
 
----BLOCO---
-
 Já dos **5 aos 7 anos**, dá pra introduzir mais detalhes, mantendo áreas confortáveis. É quando elas começam a querer ficar dentro da linha.
 
+[[CARROSSEL]]
+
 Dos **8 aos 12 anos**, é liberdade total. Encaram desenhos complexos, mandalas e paisagens. É a fase do "quero o desafio".
+
+[[BANNER]]
 
 ## Conecte com o interesse atual
 
@@ -48,5 +52,7 @@ Cole na geladeira, na porta do quarto ou num cantinho. Isso fortalece a autoesti
 Não precisa investir muito para começar bem em casa.
 
 Lápis de cor comum já entrega ótimo resultado. Para os menores, giz de cera é mais fácil de segurar. Guache é incrível, mas pede supervisão.
+
+[[OFERTA]]
 
 **Quer começar agora?** Veja nosso [acervo de desenhos](/buscar) e escolha o personagem favorito do seu pequeno. É grátis e dá pra imprimir na hora.
