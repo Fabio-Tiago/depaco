@@ -65,7 +65,17 @@ export function resolverAltDesenho(d: {
   pose?: string;
   cenario?: string;
 }): string {
-  if (d.alt_pt && d.alt_pt.trim()) return d.alt_pt.trim();
+  if (d.alt_pt && d.alt_pt.trim()) {
+    let alt = d.alt_pt.trim();
+    // O alt_pt pode ter vindo do n8n com o personagem hifenizado no meio
+    // da frase (ex: "jogador-de-futebol"). Troca pela versão sem hífen,
+    // usando o próprio campo personagem como referência (cirúrgico).
+    if (d.personagem && d.personagem.includes('-')) {
+      const semHifen = d.personagem.replace(/-/g, ' ');
+      alt = alt.split(d.personagem).join(semHifen);
+    }
+    return alt;
+  }
 
   const nome = d.personagem ? capitalize(d.personagem.replace(/-/g, ' ')) : 'Desenho';
   const partes = [`Desenho de ${nome} para colorir`];
