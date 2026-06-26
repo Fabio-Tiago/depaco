@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { resolverAltDesenho } from '@/lib/utils';
 
 type Desenho = {
   objectID: string;
@@ -41,7 +42,7 @@ export function BlogCarrossel({ desenhos }: { desenhos: Desenho[] }) {
             <div className="aspect-square relative bg-white border-2 border-ink rounded-xl overflow-hidden shadow-chunky-sm group-hover:-translate-y-1 transition-transform">
               <Image
                 src={d.url_imagem}
-                alt={`${d.personagem} ${d.pose} para colorir`}
+                alt={resolverAltDesenho(d)}
                 fill
                 sizes="160px"
                 className="object-contain p-2"
