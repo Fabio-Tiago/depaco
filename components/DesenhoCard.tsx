@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { capitalize, resolverAltDesenho } from '@/lib/utils';
+import { formatarNome, resolverAltDesenho } from '@/lib/utils';
 import type { AlgoliaDesenhoRecord } from '@/types';
 
 /**
@@ -35,7 +35,7 @@ export function DesenhoCard({
       </div>
       <div className="p-3 border-t-2 border-ink/10">
         <p className="font-display font-bold text-ink truncate">
-          {capitalize(desenho.personagem || '')}
+          {formatarNome(desenho.personagem || '')}
         </p>
         {desenho.pose && (
           <p className="text-xs text-ink/60 truncate mt-0.5">{desenho.pose}</p>
