@@ -30,6 +30,31 @@ export function capitalize(text: string): string {
 }
 
 /**
+ * Formata um nome vindo de slug (com hífen/underscore) para exibição.
+ * Ex: "jogador-de-futebol" -> "Jogador de Futebol".
+ * Mantém preposições/conectores em minúsculo (de, da, do, e, etc.),
+ * exceto quando são a primeira palavra.
+ * Use só na EXIBIÇÃO; nunca em slugs de URL ou filtros do Algolia,
+ * onde o hífen é necessário.
+ */
+export function formatarNome(text: string): string {
+  if (!text) return '';
+  const minusculas = new Set([
+    'de', 'da', 'do', 'das', 'dos', 'e', 'com', 'para', 'a', 'o', 'em',
+  ]);
+  return text
+    .replace(/[-_]/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map((palavra, i) => {
+      const lower = palavra.toLowerCase();
+      if (i > 0 && minusculas.has(lower)) return lower;
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join(' ');
+}
+
+/**
  * Resolve o texto alt de uma imagem de desenho para SEO (Google Imagens).
  * Prioridade: alt_pt pré-montado (n8n) → fórmula com personagem/pose/cenário.
  * A fórmula inclui "para colorir" porque é a intenção de busca real.
