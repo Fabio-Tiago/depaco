@@ -21,6 +21,7 @@ export interface AlgoliaDesenhoRecord {
   pose_tipo?: string;
   url_imagem: string;
   s3_path: string;
+  alt_pt?: string;
 }
 
 export interface Personagem {
