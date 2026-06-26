@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { capitalize } from '@/lib/utils';
+import { capitalize, resolverAltDesenho } from '@/lib/utils';
 import type { AlgoliaDesenhoRecord } from '@/types';
 
 /**
@@ -25,7 +25,7 @@ export function DesenhoCard({
         {desenho.url_imagem && (
           <Image
             src={desenho.url_imagem}
-            alt={`${desenho.personagem || 'Desenho'} ${desenho.pose || ''}`}
+            alt={resolverAltDesenho(desenho)}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
