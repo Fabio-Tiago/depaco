@@ -7,7 +7,7 @@ import { fetchDesenhoById, fetchDesenhosRelacionados } from '@/lib/algolia';
 import { DesenhoActions } from '@/components/DesenhoActions';
 import { DesenhoCard } from '@/components/DesenhoCard';
 import { OfertaCard } from '@/components/OfertaCard';
-import { capitalize } from '@/lib/utils';
+import { capitalize, resolverAltDesenho } from '@/lib/utils';
 import type { AlgoliaDesenhoRecord } from '@/types';
 import { resolvePack } from '@/lib/oferta';
 
@@ -144,7 +144,7 @@ export default async function DesenhoPage({ params }: PageProps) {
               {desenho.url_imagem && (
                 <Image
                   src={desenho.url_imagem}
-                  alt={`${personagem} ${desenho.pose || ''} para colorir`}
+                  alt={resolverAltDesenho(desenho)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 60vw"
                   priority
