@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { searchClient, INDEX_NAME } from '@/lib/algolia';
 import { DesenhoCard } from '@/components/DesenhoCard';
 import { OfertaCard } from '@/components/OfertaCard';
-import { capitalize } from '@/lib/utils';
+import { capitalize, formatarNome } from '@/lib/utils';
 import type { AlgoliaDesenhoRecord } from '@/types';
 
 interface PageProps {
@@ -41,8 +41,7 @@ async function fetchByCategoria(categoria: string) {
         {
           indexName: INDEX_NAME,
           query: '',
-          // assumimos que s3_path começa com a categoria
-          filters: `s3_path:${categoria}*`,
+          filters: `categorias:"${categoria}"`,
           hitsPerPage: 100,
           facets: ['subject_slug'],
         },
@@ -91,7 +90,7 @@ export default async function CategoriaPage({ params }: PageProps) {
                 href={`/personagem/${slug}`}
                 className="px-4 py-2 bg-white border-2 border-ink/10 rounded-full font-bold text-sm hover:border-ink hover:bg-mustard-50 transition-all"
               >
-                {capitalize(slug.replace(/-/g, ' '))}{' '}
+                {formatarNome(slug)}{' '}
                 <span className="text-ink/40 font-normal">({count})</span>
               </Link>
             ))}
