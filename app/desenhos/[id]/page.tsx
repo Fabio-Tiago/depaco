@@ -7,7 +7,7 @@ import { fetchDesenhoById, fetchDesenhosRelacionados } from '@/lib/algolia';
 import { DesenhoActions } from '@/components/DesenhoActions';
 import { DesenhoCard } from '@/components/DesenhoCard';
 import { OfertaCard } from '@/components/OfertaCard';
-import { capitalize, resolverAltDesenho } from '@/lib/utils';
+import { capitalize, formatarNome, resolverAltDesenho } from '@/lib/utils';
 import type { AlgoliaDesenhoRecord } from '@/types';
 import { resolvePack } from '@/lib/oferta';
 
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!desenho) return { title: 'Desenho não encontrado' };
 
-  const personagem = capitalize(desenho.personagem || 'Desenho');
+  const personagem = formatarNome(desenho.personagem || 'Desenho');
   const idade = desenho.idade_alvo_raw?.replace(/_/g, ' ') || '';
   const title = `${personagem} ${desenho.pose ? `— ${desenho.pose}` : ''} para colorir`;
   const description = `Desenho do ${personagem} para colorir e imprimir grátis. ${desenho.pose ? `${capitalize(desenho.pose)}.` : ''} ${idade ? `Indicado para crianças de ${idade}.` : ''} Baixe agora em PDF/PNG.`;
@@ -66,7 +66,7 @@ export default async function DesenhoPage({ params }: PageProps) {
     8
   )) as Partial<AlgoliaDesenhoRecord>[];
 
-  const personagem = capitalize(desenho.personagem || 'Desenho');
+  const personagem = formatarNome(desenho.personagem || 'Desenho');
   const filename = `${desenho.subject_slug}-${desenho.objectID}.png`;
 
   // Schema.org structured data — ESSENCIAL PRO SEO
