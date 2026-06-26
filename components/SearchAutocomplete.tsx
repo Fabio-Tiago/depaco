@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { autocomplete } from '@algolia/autocomplete-js';
 import { searchClient, INDEX_NAME } from '@/lib/algolia';
-import { capitalize } from '@/lib/utils';
+import { formatarNome } from '@/lib/utils';
 import '@algolia/autocomplete-theme-classic';
 
 /**
@@ -75,7 +75,7 @@ export function SearchAutocomplete({
             templates: {
               item({ item, html }) {
                 const url = item.url_imagem || '';
-                const personagem = capitalize((item.personagem as string) || '');
+                const personagem = formatarNome((item.personagem as string) || '');
                 const pose = (item.pose as string) || '';
                 const idade = (item.idade_alvo as string) || '';
 
