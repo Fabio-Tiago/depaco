@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Sparkles, Palette, Printer, Heart } from 'lucide-react';
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { OfertaCard } from '@/components/OfertaCard';
-import { fetchPersonagensUnicos, resolverCapaPost, fetchCategoriasDisponiveis } from '@/lib/algolia';
+import { fetchPersonagensUnicos, resolverCapaPost, fetchCategoriasDisponiveis, fetchTotalDesenhos } from '@/lib/algolia';
 import { getAllBlogPosts } from '@/lib/blog';
 import { capitalize } from '@/lib/utils';
 import { getCategoriaMeta } from '@/lib/categorias';
@@ -14,12 +14,23 @@ import { getCategoriaMeta } from '@/lib/categorias';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  // Em paralelo: personagens + posts recentes + categorias disponíveis
-  const [personagens, postsRaw, categoriasSlugs] = await Promise.all([
+  // Em paralelo: personagens + posts recentes + categorias + total
+  const [personagens, postsRaw, categoriasSlugs, totalDesenhos] = await Promise.all([
     fetchPersonagensUnicos(),
     Promise.resolve(getAllBlogPosts().slice(0, 3)),
     fetchCategoriasDisponiveis(),
+    fetchTotalDesenhos(),
   ]);
+
+  // Arredonda para baixo numa "casa redonda" para o selo "Mais de X".
+  // Ex: 2312 -> 2.000 ; 9540 -> 9.000 ; 760 -> 500.
+  function arredondarParaBaixo(n: number): number {
+    if (n >= 1000) return Math.floor(n / 1000) * 1000;
+    if (n >= 100) return Math.floor(n / 100) * 100;
+    return n;
+  }
+  const totalRedondo = arredondarParaBaixo(totalDesenhos);
+  const totalFormatado = totalRedondo.toLocaleString('pt-BR');
 
   // Categorias reais do Algolia + metadados visuais (nome/ícone/cor)
   const categoriasDestaque = categoriasSlugs.map(getCategoriaMeta);
@@ -52,7 +63,9 @@ export default async function HomePage() {
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-mustard-100 border-2 border-ink rounded-full mb-6 shadow-chunky-sm">
               <Sparkles className="w-4 h-4 text-terracotta" />
               <span className="text-sm font-bold text-ink">
-                Mais de 1.000 desenhos prontos
+                {totalRedondo > 0
+                  ? `Mais de ${totalFormatado} desenhos prontos`
+                  : 'Milhares de desenhos prontos'}
               </span>
             </div>
 
