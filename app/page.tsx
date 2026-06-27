@@ -3,27 +3,23 @@ import Image from 'next/image';
 import { Sparkles, Palette, Printer, Heart } from 'lucide-react';
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { OfertaCard } from '@/components/OfertaCard';
-import { fetchPersonagensUnicos, resolverCapaPost } from '@/lib/algolia';
+import { fetchPersonagensUnicos, resolverCapaPost, fetchCategoriasDisponiveis } from '@/lib/algolia';
 import { getAllBlogPosts } from '@/lib/blog';
 import { capitalize } from '@/lib/utils';
+import { getCategoriaMeta } from '@/lib/categorias';
 
 export const revalidate = 3600; // ISR — regenera a cada hora
 
-const CATEGORIAS_DESTAQUE = [
-  { slug: 'personagem_filme', nome: 'Personagens de Filme', icon: '🎬', cor: 'bg-coral-100' },
-  { slug: 'personagem_anime', nome: 'Anime e Mangá', icon: '⚡', cor: 'bg-mustard-100' },
-  { slug: 'animal', nome: 'Animais', icon: '🐾', cor: 'bg-sky-100' },
-  { slug: 'tema_sazonal', nome: 'Datas Comemorativas', icon: '🎉', cor: 'bg-terracotta-100' },
-  { slug: 'humano', nome: 'Profissões', icon: '👩‍⚕️', cor: 'bg-mustard-100' },
-  { slug: 'educacional', nome: 'Educacional', icon: '📚', cor: 'bg-coral-100' },
-];
-
 export default async function HomePage() {
-  // Em paralelo: personagens + posts recentes
-  const [personagens, postsRaw] = await Promise.all([
+  // Em paralelo: personagens + posts recentes + categorias disponíveis
+  const [personagens, postsRaw, categoriasSlugs] = await Promise.all([
     fetchPersonagensUnicos(),
     Promise.resolve(getAllBlogPosts().slice(0, 3)),
+    fetchCategoriasDisponiveis(),
   ]);
+
+  // Categorias reais do Algolia + metadados visuais (nome/ícone/cor)
+  const categoriasDestaque = categoriasSlugs.map(getCategoriaMeta);
 
   // Resolve a capa de cada post (acervo via related_personagem, ou fallback)
   const posts = await Promise.all(
@@ -122,27 +118,29 @@ export default async function HomePage() {
       </section>
 
       {/* === CATEGORIAS === */}
-      <section className="container mx-auto px-4 mb-16">
-        <div className="mb-6">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-ink">
-            Explorar por categoria
-          </h2>
-          <p className="text-ink/60 mt-1">Encontre rapidinho o que está procurando</p>
-        </div>
+      {categoriasDestaque.length > 0 && (
+        <section className="container mx-auto px-4 mb-16">
+          <div className="mb-6">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-ink">
+              Explorar por categoria
+            </h2>
+            <p className="text-ink/60 mt-1">Encontre rapidinho o que está procurando</p>
+          </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {CATEGORIAS_DESTAQUE.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/categorias/${cat.slug}`}
-              className={`${cat.cor} border-2 border-ink rounded-2xl p-4 text-center shadow-chunky-sm hover:shadow-chunky hover:-translate-y-1 transition-all`}
-            >
-              <div className="text-3xl mb-2">{cat.icon}</div>
-              <p className="font-display font-bold text-ink text-sm">{cat.nome}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {categoriasDestaque.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/categorias/${cat.slug}`}
+                className={`${cat.cor} border-2 border-ink rounded-2xl p-4 text-center shadow-chunky-sm hover:shadow-chunky hover:-translate-y-1 transition-all`}
+              >
+                <div className="text-3xl mb-2">{cat.icon}</div>
+                <p className="font-display font-bold text-ink text-sm">{cat.nome}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* === PERSONAGENS POPULARES === */}
       {personagensDestaque.length > 0 && (
