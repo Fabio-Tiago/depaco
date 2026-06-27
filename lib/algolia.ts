@@ -194,7 +194,8 @@ export async function fetchCategoriasDisponiveis(): Promise<string[]> {
     return Object.entries(facet)
       .sort((a, b) => b[1] - a[1])
       .map(([slug]) => slug);
-  } catch {
+  } catch (e) {
+    console.warn('Erro ao listar categorias:', e);
     return [];
   }
 }
