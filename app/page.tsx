@@ -8,7 +8,10 @@ import { getAllBlogPosts } from '@/lib/blog';
 import { capitalize } from '@/lib/utils';
 import { getCategoriaMeta } from '@/lib/categorias';
 
-export const revalidate = 3600; // ISR — regenera a cada hora
+// A home faz queries ao Algolia server-side. Forçamos renderização em
+// runtime (não no build) para garantir que as env vars NEXT_PUBLIC_ALGOLIA_*
+// estejam disponíveis — senão as seções de categorias/personagens vêm vazias.
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   // Em paralelo: personagens + posts recentes + categorias disponíveis
