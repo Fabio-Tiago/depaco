@@ -170,3 +170,31 @@ export async function resolverCapaPost(opts: {
 
   return process.env.NEXT_PUBLIC_OG_IMAGE_FALLBACK || '';
 }
+
+/**
+ * Busca os valores de categoria que realmente existem no índice (via facet).
+ * Retorna lista de slugs ordenada por quantidade (mais desenhos primeiro).
+ * Requer que `categorias` esteja em attributesForFaceting no Algolia.
+ */
+export async function fetchCategoriasDisponiveis(): Promise<string[]> {
+  try {
+    const { results } = await searchClient.search({
+      requests: [
+        {
+          indexName: INDEX_NAME,
+          query: '',
+          hitsPerPage: 0,
+          facets: ['categorias'],
+          maxValuesPerFacet: 50,
+        },
+      ],
+    });
+    const first = results[0] as { facets?: Record<string, Record<string, number>> };
+    const facet = first?.facets?.categorias || {};
+    return Object.entries(facet)
+      .sort((a, b) => b[1] - a[1])
+      .map(([slug]) => slug);
+  } catch {
+    return [];
+  }
+}
