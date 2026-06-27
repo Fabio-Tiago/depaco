@@ -199,3 +199,20 @@ export async function fetchCategoriasDisponiveis(): Promise<string[]> {
     return [];
   }
 }
+
+/**
+ * Retorna o total de desenhos no índice (nbHits de uma busca vazia).
+ * Usado na home para exibir a contagem real e dinâmica do acervo.
+ */
+export async function fetchTotalDesenhos(): Promise<number> {
+  try {
+    const { results } = await searchClient.search({
+      requests: [{ indexName: INDEX_NAME, query: '', hitsPerPage: 0 }],
+    });
+    const first = results[0] as { nbHits?: number };
+    return first?.nbHits || 0;
+  } catch (e) {
+    console.warn('[total] erro ao contar desenhos:', e);
+    return 0;
+  }
+}
