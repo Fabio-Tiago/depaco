@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { fetchAllDesenhoIds, fetchPersonagensUnicos } from '@/lib/algolia';
+import { fetchAllDesenhoIds, fetchPersonagensUnicos, fetchCategoriasDisponiveis } from '@/lib/algolia';
 import { getAllBlogSlugs } from '@/lib/blog';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://depaco.com.br';
@@ -20,27 +20,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/pack/mega-pack-300`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
   ];
 
-  // Categorias fixas
-  const categorias = [
-    'personagem_filme',
-    'personagem_anime',
-    'animal',
-    'tema_sazonal',
-    'humano',
-    'educacional',
-  ].map((c) => ({
+  // Tudo dinâmico em paralelo (inclui categorias reais do Algolia)
+  const [desenhoIds, personagens, blogSlugs, categoriasSlugs] = await Promise.all([
+    fetchAllDesenhoIds(),
+    fetchPersonagensUnicos(),
+    Promise.resolve(getAllBlogSlugs()),
+    fetchCategoriasDisponiveis(),
+  ]);
+
+  const categorias = categoriasSlugs.map((c) => ({
     url: `${SITE_URL}/categorias/${c}`,
     lastModified: now,
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }));
-
-  // Tudo dinâmico em paralelo
-  const [desenhoIds, personagens, blogSlugs] = await Promise.all([
-    fetchAllDesenhoIds(),
-    fetchPersonagensUnicos(),
-    Promise.resolve(getAllBlogSlugs()),
-  ]);
 
   const desenhoUrls = desenhoIds.map((id) => ({
     url: `${SITE_URL}/desenhos/${id}`,
