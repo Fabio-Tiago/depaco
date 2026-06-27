@@ -4,7 +4,8 @@ import type { Metadata } from 'next';
 import { searchClient, INDEX_NAME } from '@/lib/algolia';
 import { DesenhoCard } from '@/components/DesenhoCard';
 import { OfertaCard } from '@/components/OfertaCard';
-import { capitalize, formatarNome } from '@/lib/utils';
+import { formatarNome } from '@/lib/utils';
+import { getCategoriaNome } from '@/lib/categorias';
 import type { AlgoliaDesenhoRecord } from '@/types';
 
 interface PageProps {
@@ -13,20 +14,9 @@ interface PageProps {
 
 export const revalidate = 3600;
 
-const CATEGORIA_NAMES: Record<string, string> = {
-  personagem_filme: 'Personagens de Filme',
-  personagem_anime: 'Anime e Mangá',
-  animal: 'Animais',
-  tema_sazonal: 'Datas Comemorativas',
-  humano: 'Profissões',
-  educacional: 'Educacional',
-  objeto: 'Objetos',
-  natureza: 'Natureza',
-};
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { categoria } = await params;
-  const nome = CATEGORIA_NAMES[categoria] || capitalize(categoria.replace(/_/g, ' '));
+  const nome = getCategoriaNome(categoria);
   return {
     title: `${nome} — Desenhos para colorir`,
     description: `Desenhos de ${nome.toLowerCase()} para colorir e imprimir grátis.`,
@@ -63,7 +53,7 @@ export default async function CategoriaPage({ params }: PageProps) {
 
   if (!hits.length) notFound();
 
-  const nome = CATEGORIA_NAMES[categoria] || capitalize(categoria.replace(/_/g, ' '));
+  const nome = getCategoriaNome(categoria);
   const personagensArr = Object.entries(personagens).slice(0, 12);
 
   return (
