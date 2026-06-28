@@ -21,14 +21,14 @@ export function DesenhoCard({
       href={`/desenhos/${desenho.objectID}`}
       className="group block bg-white border-2 border-ink rounded-2xl overflow-hidden shadow-chunky-sm hover:shadow-chunky hover:-translate-y-1 transition-all"
     >
-      <div className="aspect-square bg-cream relative overflow-hidden">
+      <div className="aspect-square bg-white relative overflow-hidden">
         {desenho.url_imagem && (
           <Image
             src={desenho.url_imagem}
             alt={resolverAltDesenho(desenho)}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
+            className="object-contain p-2 desenho-limpo group-hover:scale-105 transition-transform duration-500"
             priority={priority}
           />
         )}
