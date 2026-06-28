@@ -147,6 +147,6 @@
    reforça o contorno preto, sem alterar o arquivo original (o PDF
    no Robolly continua usando a imagem original). */
 .desenho-limpo {
-  filter: brightness(1.08) contrast(1.15);
+  filter: brightness(1.12) contrast(1.15);
   background-color: #ffffff;
 }
