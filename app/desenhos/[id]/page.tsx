@@ -148,7 +148,7 @@ export default async function DesenhoPage({ params }: PageProps) {
                   fill
                   sizes="(max-width: 1024px) 100vw, 60vw"
                   priority
-                  className="object-contain p-4"
+                  className="object-contain p-4 desenho-limpo"
                 />
               )}
             </div>
