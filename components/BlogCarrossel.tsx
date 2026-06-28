@@ -45,7 +45,7 @@ export function BlogCarrossel({ desenhos }: { desenhos: Desenho[] }) {
                 alt={resolverAltDesenho(d)}
                 fill
                 sizes="160px"
-                className="object-contain p-2"
+                className="object-contain p-2 desenho-limpo"
                 loading="lazy"
               />
             </div>
