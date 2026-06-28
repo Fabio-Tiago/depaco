@@ -140,3 +140,13 @@
     animation: none;
   }
 }
+
+/* Desenho de colorir — força fundo branco puro na exibição.
+   O Gemini às vezes gera JPG com fundo levemente cinza/off-white ou
+   moldura suave. Este filtro estoura os tons claros para branco e
+   reforça o contorno preto, sem alterar o arquivo original (o PDF
+   no Robolly continua usando a imagem original). */
+.desenho-limpo {
+  filter: brightness(1.08) contrast(1.15);
+  background-color: #ffffff;
+}
