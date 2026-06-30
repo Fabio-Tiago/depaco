@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Fredoka, Plus_Jakarta_Sans } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { MetaPixel } from '@/components/MetaPixel';
+import { PixelPageView } from '@/components/PixelPageView';
 import './globals.css';
 
 const fredoka = Fredoka({
@@ -64,6 +66,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${fredoka.variable} ${jakarta.variable}`}>
       <body className="font-sans antialiased min-h-screen flex flex-col">
+        <MetaPixel />
+        <PixelPageView />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
