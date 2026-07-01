@@ -11,7 +11,7 @@ import '@algolia/autocomplete-theme-classic';
 // Isso reduz drasticamente as requisições ao Algolia (economia de cota),
 // sem afetar SEO nem o carregamento — só muda QUANDO a busca dispara.
 const DEBOUNCE_MS = 400;
-const MIN_CHARS = 4;
+const MIN_CHARS = 3;
 
 function debouncePromise<TArgs extends unknown[], TResult>(
   fn: (...args: TArgs) => Promise<TResult>,
