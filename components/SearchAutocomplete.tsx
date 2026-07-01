@@ -6,6 +6,27 @@ import { searchClient, INDEX_NAME } from '@/lib/algolia';
 import { formatarNome } from '@/lib/utils';
 import '@algolia/autocomplete-theme-classic';
 
+// Debounce próprio: agrupa chamadas rápidas (digitação) numa só.
+// Espera o usuário parar de digitar por WAIT ms antes de buscar.
+// Isso reduz drasticamente as requisições ao Algolia (economia de cota),
+// sem afetar SEO nem o carregamento — só muda QUANDO a busca dispara.
+const DEBOUNCE_MS = 300;
+const MIN_CHARS = 2;
+
+function debouncePromise<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => Promise<TResult>,
+  wait: number
+) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  return (...args: TArgs): Promise<TResult> => {
+    if (timer) clearTimeout(timer);
+    return new Promise((resolve) => {
+      timer = setTimeout(() => resolve(fn(...args)), wait);
+    });
+  };
+}
+
 /**
  * Componente de busca com autocomplete instantâneo via Algolia.
  * Mostra thumbnails dos desenhos enquanto digita.
@@ -28,6 +49,31 @@ export function SearchAutocomplete({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // Função que realmente chama o Algolia, com debounce aplicado.
+    // Uma única instância por montagem do componente = timer estável.
+    const buscarDebounced = debouncePromise(async (query: string) => {
+      const res = await searchClient.search({
+        requests: [
+          {
+            indexName: INDEX_NAME,
+            query,
+            hitsPerPage: 6,
+            attributesToRetrieve: [
+              'objectID',
+              'personagem',
+              'pose',
+              'cenario',
+              'idade_alvo',
+              'url_imagem',
+              'subject_slug',
+            ],
+          },
+        ],
+      });
+      const typed = res as { results: Array<{ hits: unknown[] }> };
+      return (typed.results[0]?.hits || []) as Record<string, string>[];
+    }, DEBOUNCE_MS);
+
     const search = autocomplete({
       container: containerRef.current,
       placeholder,
@@ -44,30 +90,10 @@ export function SearchAutocomplete({
           {
             sourceId: 'desenhos',
             getItems() {
-              if (!query) return [];
-              return searchClient
-                .search({
-                  requests: [
-                    {
-                      indexName: INDEX_NAME,
-                      query,
-                      hitsPerPage: 6,
-                      attributesToRetrieve: [
-                        'objectID',
-                        'personagem',
-                        'pose',
-                        'cenario',
-                        'idade_alvo',
-                        'url_imagem',
-                        'subject_slug',
-                      ],
-                    },
-                  ],
-                })
-                .then((res: unknown) => {
-                  const typed = res as { results: Array<{ hits: unknown[] }> };
-                  return (typed.results[0]?.hits || []) as Record<string, string>[];
-                });
+              // Só busca a partir de MIN_CHARS caracteres.
+              // Evita disparar request em "a", "d", etc.
+              if (!query || query.trim().length < MIN_CHARS) return [];
+              return buscarDebounced(query.trim());
             },
             getItemUrl({ item }) {
               return `/desenhos/${item.objectID}`;
