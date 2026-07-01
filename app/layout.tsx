@@ -4,6 +4,8 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { MetaPixel } from '@/components/MetaPixel';
 import { PixelPageView } from '@/components/PixelPageView';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
+import { GAPageView } from '@/components/GAPageView';
 import './globals.css';
 
 const fredoka = Fredoka({
@@ -68,6 +70,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased min-h-screen flex flex-col">
         <MetaPixel />
         <PixelPageView />
+        <GoogleAnalytics />
+        <GAPageView />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
