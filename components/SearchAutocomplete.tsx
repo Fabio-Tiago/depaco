@@ -10,7 +10,7 @@ import '@algolia/autocomplete-theme-classic';
 // Espera o usuário parar de digitar por WAIT ms antes de buscar.
 // Isso reduz drasticamente as requisições ao Algolia (economia de cota),
 // sem afetar SEO nem o carregamento — só muda QUANDO a busca dispara.
-const DEBOUNCE_MS = 400;
+const DEBOUNCE_MS = 300;
 const MIN_CHARS = 3;
 
 function debouncePromise<TArgs extends unknown[], TResult>(
