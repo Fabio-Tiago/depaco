@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CheckCircle2, ShieldCheck, Zap, Sparkles, Star, Gift, Clock, MessageCircle } from 'lucide-react';
 import { getPackById, PACKS, formatBRL, calcDesconto } from '@/lib/oferta';
+import { BotaoCheckout } from '@/components/BotaoCheckout';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -96,12 +97,12 @@ export default async function PackPage({ params }: PageProps) {
               <p className="text-sm text-ink/60">ou em até 3x sem juros no cartão</p>
             </div>
 
-            <Link
-              href={pack.url_checkout}
+            <BotaoCheckout
+              pack={pack}
               className="block w-full px-8 py-5 bg-terracotta text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky-lg hover:translate-y-[-3px] transition-all text-center text-xl"
             >
               QUERO MEU PACK AGORA →
-            </Link>
+            </BotaoCheckout>
 
             <div className="flex items-center justify-center gap-6 mt-4 text-sm text-ink/70">
               <span className="flex items-center gap-1.5">
@@ -240,12 +241,12 @@ export default async function PackPage({ params }: PageProps) {
           <p className="text-lg text-ink/70 mb-8 max-w-xl mx-auto">
             {pack.total_desenhos} desenhos por {formatBRL(pack.preco)}. Acesso imediato. 7 dias de garantia.
           </p>
-          <Link
-            href={pack.url_checkout}
+          <BotaoCheckout
+            pack={pack}
             className="inline-block px-10 py-5 bg-terracotta text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky-lg hover:translate-y-[-3px] transition-all text-xl"
           >
             QUERO MEU PACK AGORA →
-          </Link>
+          </BotaoCheckout>
         </section>
       </div>
     </>
