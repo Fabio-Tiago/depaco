@@ -26,7 +26,7 @@ export function Footer() {
             <h3 className="font-display font-bold text-ink mb-3">Packs</h3>
             <ul className="space-y-2 text-sm text-ink/70">
               <li><Link href="/packs" className="hover:text-coral">Todos os packs</Link></li>
-              <li><Link href="/pack/mega-pack-300" className="hover:text-coral">Mega Pack 300+</Link></li>
+              <li><Link href="/pack/mega-pack-desenhos-para-colorir" className="hover:text-coral">Mega Pack</Link></li>
               <li><Link href="/pack/pack-esporte" className="hover:text-coral">Pack Esporte</Link></li>
             </ul>
           </div>
