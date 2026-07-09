@@ -12,10 +12,10 @@ import type { PackOferta, AlgoliaDesenhoRecord } from '@/types';
 
 // === PACK GERAL (default) ===
 export const PACK_GERAL: PackOferta = {
-  id: 'mega-pack-300',
+  id: 'mega-pack-desenhos-para-colorir',
   nome: 'Mega Pack DEPACO',
-  descricao: '300 desenhos únicos para colorir — variedade de personagens, animais e temas',
-  total_desenhos: Number(process.env.NEXT_PUBLIC_PACK_QUANTITY) || 300,
+  descricao: '1600+ desenhos únicos para colorir — variedade de personagens, animais e temas',
+  total_desenhos: Number(process.env.NEXT_PUBLIC_PACK_QUANTITY) || 1600,
   preco: Number(process.env.NEXT_PUBLIC_PACK_PRICE) || 19.9,
   preco_de: 39.9,
   url_checkout: process.env.NEXT_PUBLIC_PACK_CHECKOUT_URL || '#',
