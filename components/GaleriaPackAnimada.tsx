@@ -8,6 +8,7 @@ type Desenho = {
   personagem: string;
   url_imagem: string;
   alt_pt?: string;
+  categorias?: string;
 };
 
 /**
@@ -45,27 +46,42 @@ export function GaleriaPackAnimada({
 
     const timer = setInterval(() => {
       setSlots((prev) => {
-        const usados = new Set(prev);
-        // acha um desenho do pool que não está visível agora
-        let proximo = -1;
-        for (let tentativa = 0; tentativa < desenhos.length; tentativa++) {
-          const cand = Math.floor(Math.random() * desenhos.length);
-          if (!usados.has(cand)) {
-            proximo = cand;
-            break;
-          }
-        }
-        if (proximo === -1) return prev;
+        const idxVisiveis = new Set(prev);
+
+        // categorias já presentes no grid (ignorando o slot que vai trocar)
+        const catsVisiveis = new Set(
+          prev
+            .filter((_, s) => s !== slotAtual)
+            .map((i) => desenhos[i]?.categorias)
+            .filter(Boolean)
+        );
+
+        // prioriza candidatos de categoria que NÃO está no grid
+        const candidatos = desenhos
+          .map((d, i) => ({ d, i }))
+          .filter(({ d, i }) => !idxVisiveis.has(i) && !catsVisiveis.has(d.categorias));
+
+        // se não houver, aceita qualquer um que não esteja visível
+        const pool =
+          candidatos.length > 0
+            ? candidatos
+            : desenhos
+                .map((d, i) => ({ d, i }))
+                .filter(({ i }) => !idxVisiveis.has(i));
+
+        if (pool.length === 0) return prev;
+
+        const escolhido = pool[Math.floor(Math.random() * pool.length)];
 
         const novo = [...prev];
-        novo[slotAtual] = proximo;
+        novo[slotAtual] = escolhido.i;
         slotAtual = (slotAtual + 1) % 4; // próximo card na próxima vez
         return novo;
       });
     }, 3000);
 
     return () => clearInterval(timer);
-  }, [temPool, desenhos.length]);
+  }, [temPool, desenhos]);
 
   // fallback: se não houver desenhos, mostra os emojis antigos
   if (desenhos.length === 0) {
