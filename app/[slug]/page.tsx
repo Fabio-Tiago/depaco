@@ -50,7 +50,11 @@ export default async function PaginaFofaRoute({ params }: PageProps) {
   const desenhos =
     pagina.busca.tipo === 'bichinho'
       ? await fetchDesenhosFofosPorBichinho(pagina.busca.valor, 48)
-      : await fetchDesenhosPorFiltro(pagina.busca.valor, 48);
+      : await fetchDesenhosPorFiltro(
+          pagina.busca.valor,
+          48,
+          pagina.fallbackQuery
+        );
 
   // Pack em destaque (usado no CTA)
   const pack = PACKS.find((p) => p.isDefault) || PACKS[0];
