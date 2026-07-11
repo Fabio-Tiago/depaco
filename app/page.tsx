@@ -3,7 +3,15 @@ import Image from 'next/image';
 import { Sparkles, Palette, Printer, Heart } from 'lucide-react';
 import { SearchAutocomplete } from '@/components/SearchAutocomplete';
 import { OfertaCard } from '@/components/OfertaCard';
-import { fetchPersonagensUnicos, resolverCapaPost, fetchCategoriasDisponiveis, fetchTotalDesenhos } from '@/lib/algolia';
+import { CarrosselHome } from '@/components/CarrosselHome';
+import {
+  fetchPersonagensUnicos,
+  resolverCapaPost,
+  fetchCategoriasDisponiveis,
+  fetchTotalDesenhos,
+  fetchPopularesHome,
+  fetchDesenhosCarrosselHome,
+} from '@/lib/algolia';
 import { getAllBlogPosts } from '@/lib/blog';
 import { capitalize } from '@/lib/utils';
 import { getCategoriaMeta } from '@/lib/categorias';
@@ -14,12 +22,21 @@ import { getCategoriaMeta } from '@/lib/categorias';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  // Em paralelo: personagens + posts recentes + categorias + total
-  const [personagens, postsRaw, categoriasSlugs, totalDesenhos] = await Promise.all([
+  // Em paralelo: personagens + posts + categorias + total + populares + carrossel
+  const [
+    personagens,
+    postsRaw,
+    categoriasSlugs,
+    totalDesenhos,
+    popularesSlugs,
+    desenhosCarrossel,
+  ] = await Promise.all([
     fetchPersonagensUnicos(),
     Promise.resolve(getAllBlogPosts().slice(0, 3)),
     fetchCategoriasDisponiveis(),
     fetchTotalDesenhos(),
+    fetchPopularesHome(10),
+    fetchDesenhosCarrosselHome(8),
   ]);
 
   // Arredonda para baixo numa "casa redonda" para o selo "Mais de X".
@@ -90,22 +107,34 @@ export default async function HomePage() {
               <SearchAutocomplete placeholder="Digite: stitch, dinossauro, princesa, capivara..." />
             </div>
 
-            {/* Atalhos populares */}
+            {/* Atalhos populares — vêm do acervo real (Algolia, server-side).
+                Se o Algolia falhar, cai numa lista fixa de segurança. */}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm">
               <span className="text-ink/50 font-medium">Populares:</span>
-              {['stitch', 'homem-aranha', 'capivara', 'bobbie-goods', 'hello-kitty'].map((p) => (
+              {(popularesSlugs.length > 0
+                ? popularesSlugs
+                : ['stitch', 'homem-aranha', 'capivara', 'sonic', 'hello-kitty']
+              ).map((p) => (
                 <Link
                   key={p}
                   href={`/buscar?q=${p}`}
                   className="px-3 py-1 bg-white border-2 border-ink/10 rounded-full font-medium hover:border-ink hover:bg-mustard-50 transition-all"
                 >
-                  {capitalize(p.replace('-', ' '))}
+                  {capitalize(p.replace(/-/g, ' '))}
                 </Link>
               ))}
             </div>
           </div>
         </div>
       </section>
+
+      {/* === OFERTA COMPACTA === */}
+      <section className="container mx-auto px-4 mb-16">
+        <OfertaCard variant="compact" />
+      </section>
+
+      {/* === CARROSSEL LARGO (full-bleed) === */}
+      <CarrosselHome desenhos={desenhosCarrossel} />
 
       {/* === BENEFÍCIOS RÁPIDOS === */}
       <section className="container mx-auto px-4 mb-16">
@@ -126,11 +155,6 @@ export default async function HomePage() {
             </div>
           ))}
         </div>
-      </section>
-
-      {/* === OFERTA COMPACTA === */}
-      <section className="container mx-auto px-4 mb-16">
-        <OfertaCard variant="compact" />
       </section>
 
       {/* === CATEGORIAS === */}
