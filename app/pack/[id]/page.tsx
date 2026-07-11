@@ -211,7 +211,7 @@ export default async function PackPage({ params }: PageProps) {
 
             <div className="max-w-2xl mx-auto">
               <div className="bg-white border-2 border-ink rounded-3xl shadow-chunky p-4 md:p-6">
-                <CheckoutElements contentId={pack.checkoutContentId} />
+                <CheckoutElements pack={pack} />
               </div>
 
               <p className="text-center text-sm text-ink/50 mt-4">
