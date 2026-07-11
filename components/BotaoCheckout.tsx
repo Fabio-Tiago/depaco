@@ -7,20 +7,20 @@ import type { PackOferta } from '@/types';
 
 /**
  * Botão de checkout REUTILIZÁVEL.
- * Dispara InitiateCheckout (Meta Pixel) + begin_checkout (GA4) no clique.
  *
- * Depois, faz UMA de duas coisas:
+ * ── ONDE O InitiateCheckout É DISPARADO ──────────────────────────
+ * NÃO é mais aqui. Com o Checkout Elements, clicar neste botão apenas
+ * ROLA a página até o formulário — é um sinal fraco (qualquer visitante
+ * clica e rola, sem intenção real de comprar). Otimizar campanha por
+ * esse evento ensinaria o Meta a buscar gente que clica em botão.
  *
- *  a) Se o pack tem `checkoutContentId` E existe um Checkout Elements na
- *     página → ROLA suavemente até ele. A pessoa não sai do site.
+ * O InitiateCheckout agora dispara no CheckoutElements, quando o
+ * formulário de pagamento ENTRA NA TELA — intenção bem mais concreta.
  *
- *  b) Caso contrário → redireciona para a URL de checkout da Eduzz,
- *     levando junto os identificadores de rastreio do Meta (fbc/fbp).
- *
- * Exemplo:
- *   <BotaoCheckout pack={pack} className="...">
- *     QUERO MEU PACK AGORA →
- *   </BotaoCheckout>
+ * Quando NÃO há checkout embutido (pack sem checkoutContentId), este
+ * botão redireciona para a Eduzz — e aí sim ele dispara o evento, já
+ * que sair do site É a ação relevante.
+ * ─────────────────────────────────────────────────────────────────
  */
 export function BotaoCheckout({
   pack,
@@ -34,7 +34,18 @@ export function BotaoCheckout({
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
 
-    // ---- Meta Pixel: InitiateCheckout ----
+    const alvo = document.getElementById('eduzz-checkout-elements');
+
+    // ---- Caso A: checkout embutido na página ----
+    if (pack.checkoutContentId && alvo) {
+      // Só rola. O InitiateCheckout dispara quando o checkout aparecer
+      // na tela (ver CheckoutElements.tsx).
+      alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    // ---- Caso B: redireciona para o checkout externo ----
+    // Aqui o clique É a ação relevante, então marcamos o evento.
     trackEvent('InitiateCheckout', {
       value: pack.preco,
       currency: 'BRL',
@@ -43,35 +54,21 @@ export function BotaoCheckout({
       num_items: pack.total_desenhos ?? 1,
     });
 
-    // ---- GA4: begin_checkout ----
     gaEvent('begin_checkout', {
       currency: 'BRL',
       value: pack.preco,
       items: [{ item_id: pack.id, item_name: pack.nome ?? `Pack ${pack.id}` }],
     });
 
-    // ---- Checkout embutido na própria página? ----
-    const alvo = document.getElementById('eduzz-checkout-elements');
-
-    if (pack.checkoutContentId && alvo) {
-      // Rola até o formulário de pagamento. Sem sair do site.
-      alvo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    // ---- Fallback: redireciona para o checkout da Eduzz ----
-    // Leva fbc/fbp na URL para a Conversions API conseguir atribuir a
-    // venda ao anúncio que gerou o clique.
+    // Leva fbc/fbp na URL para a CAPI conseguir atribuir a venda
     const urlComRastreio = comRastreioMeta(pack.url_checkout);
 
-    // Pequeno timeout dá tempo do evento sair antes de trocar de página.
+    // Pequeno timeout dá tempo do evento sair antes de trocar de página
     setTimeout(() => {
       window.location.href = urlComRastreio;
     }, 150);
   }
 
-  // O href aponta para o checkout externo — serve como fallback caso o
-  // JavaScript falhe, e mantém o link acessível (abrir em nova aba etc.)
   return (
     <a href={pack.url_checkout} onClick={handleClick} className={className}>
       {children}
