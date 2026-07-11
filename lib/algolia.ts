@@ -218,29 +218,65 @@ export async function fetchTotalDesenhos(): Promise<number> {
 }
 
 /**
- * Busca uma leva de desenhos variados para a galeria animada do pack.
- * Traz mais do que os 4 visíveis para poder rotacionar entre eles.
+ * Busca desenhos VARIADOS para a galeria animada do pack.
+ *
+ * Em vez de uma busca genérica (que traz os primeiros do índice e acaba
+ * repetindo a mesma categoria), busca em paralelo dentro de cada categoria
+ * e intercala os resultados. Assim o grid mostra sempre um mix: um animal,
+ * um jogador, um personagem, um objeto...
+ *
  * Roda no servidor (Server Component) — as imagens vêm no HTML (bom p/ SEO).
  */
-export async function fetchDesenhosGaleria(limit = 24) {
+export async function fetchDesenhosGaleria(porCategoria = 6) {
+  type Hit = {
+    objectID: string;
+    personagem: string;
+    url_imagem: string;
+    alt_pt?: string;
+    categorias?: string;
+  };
+
   try {
+    // 1) descobre as categorias reais do índice
+    const categorias = await fetchCategoriasDisponiveis();
+    if (categorias.length === 0) return [];
+
+    // 2) busca N desenhos de cada categoria, tudo numa requisição só
     const { results } = await searchClient.search({
-      requests: [
-        {
-          indexName: INDEX_NAME,
-          query: '',
-          hitsPerPage: limit,
-          attributesToRetrieve: ['objectID', 'personagem', 'url_imagem', 'alt_pt'],
-        },
-      ],
+      requests: categorias.map((cat) => ({
+        indexName: INDEX_NAME,
+        query: '',
+        filters: `categorias:"${cat}"`,
+        hitsPerPage: porCategoria,
+        attributesToRetrieve: ['objectID', 'personagem', 'url_imagem', 'alt_pt', 'categorias'],
+      })),
     });
-    const first = results[0] as { hits?: unknown[] };
-    return (first?.hits || []) as Array<{
-      objectID: string;
-      personagem: string;
-      url_imagem: string;
-      alt_pt?: string;
-    }>;
+
+    // 3) agrupa os hits por categoria
+    const porCat: Hit[][] = results.map((r) => {
+      const hits = ((r as { hits?: unknown[] }).hits || []) as Hit[];
+      // embaralha dentro da categoria pra não pegar sempre os mesmos
+      return hits.sort(() => Math.random() - 0.5);
+    });
+
+    // 4) INTERCALA: 1 de cada categoria por rodada (round-robin).
+    //    Garante que os 4 primeiros (visíveis) sejam de categorias diferentes.
+    const intercalado: Hit[] = [];
+    const maxPorCat = Math.max(...porCat.map((c) => c.length), 0);
+
+    for (let i = 0; i < maxPorCat; i++) {
+      // embaralha a ORDEM das categorias a cada rodada
+      const ordem = porCat
+        .map((_, idx) => idx)
+        .sort(() => Math.random() - 0.5);
+
+      for (const catIdx of ordem) {
+        const item = porCat[catIdx][i];
+        if (item && item.url_imagem) intercalado.push(item);
+      }
+    }
+
+    return intercalado;
   } catch {
     return [];
   }
