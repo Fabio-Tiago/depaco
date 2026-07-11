@@ -21,6 +21,8 @@ export interface PaginaFofa {
   slug: string;
   /** filtro/termo usado no Algolia */
   busca: { tipo: 'filtro'; valor: string } | { tipo: 'bichinho'; valor: string };
+  /** busca textual de reserva, caso o filtro por faceta não funcione */
+  fallbackQuery?: string;
   /** <title> da aba/SERP */
   title: string;
   /** meta description */
@@ -36,12 +38,22 @@ export interface PaginaFofa {
   focoNoPack?: boolean;
 }
 
-const FILTRO_FOFO = 'subcategoria:"fofo-cozy"';
+/**
+ * Filtro dos desenhos fofos no Algolia.
+ *
+ * IMPORTANTE: usa `tema` (e NÃO `subcategoria`), porque o script
+ * "Monta JSON" do n8n só envia `tema` ao índice — `subcategoria`
+ * existe na planilha mas nunca chega ao Algolia.
+ *
+ * Aceita os três valores (OR) para cobrir os registros antigos e novos.
+ */
+const FILTRO_FOFO = 'tema:"fofo" OR tema:"cozy" OR tema:"bobbie-goods"';
 
 export const PAGINAS_FOFAS: PaginaFofa[] = [
   {
     slug: 'desenhos-fofos-para-colorir',
     busca: { tipo: 'filtro', valor: FILTRO_FOFO },
+    fallbackQuery: 'ursinho gatinho cachorrinho coelhinho patinho',
     title: 'Desenhos Fofos para Colorir — Grátis para Imprimir | DEPACO',
     description:
       'Desenhos fofos e fofinhos para colorir e imprimir de graça. Ursinhos, gatinhos, cachorrinhos e coelhinhos em cenas do dia a dia. Prontos para A4.',
@@ -78,6 +90,7 @@ export const PAGINAS_FOFAS: PaginaFofa[] = [
   {
     slug: 'animais-fofos-para-colorir',
     busca: { tipo: 'filtro', valor: FILTRO_FOFO },
+    fallbackQuery: 'ursinho gatinho cachorrinho coelhinho patinho',
     title: 'Animais Fofos para Colorir — Desenhos Grátis para Imprimir | DEPACO',
     description:
       'Desenhos de animais fofos para colorir e imprimir grátis. Bichinhos fofinhos: ursinho, gatinho, cachorrinho, coelhinho e patinho.',
@@ -90,6 +103,7 @@ export const PAGINAS_FOFAS: PaginaFofa[] = [
   {
     slug: 'desenhos-kawaii-para-colorir',
     busca: { tipo: 'filtro', valor: FILTRO_FOFO },
+    fallbackQuery: 'ursinho gatinho cachorrinho coelhinho patinho',
     title: 'Desenhos Kawaii para Colorir — Grátis para Imprimir | DEPACO',
     description:
       'Desenhos kawaii para colorir e imprimir grátis. Personagens fofinhos no estilo kawaii, com traço arredondado e fácil de pintar.',
@@ -102,6 +116,7 @@ export const PAGINAS_FOFAS: PaginaFofa[] = [
   {
     slug: 'desenhos-fofos-para-imprimir',
     busca: { tipo: 'filtro', valor: FILTRO_FOFO },
+    fallbackQuery: 'ursinho gatinho cachorrinho coelhinho patinho',
     title: 'Desenhos Fofos para Imprimir — Grátis em A4 | DEPACO',
     description:
       'Desenhos fofinhos para imprimir de graça, em folha A4. Baixe agora e imprima em casa: bichinhos fofos prontos para colorir.',
