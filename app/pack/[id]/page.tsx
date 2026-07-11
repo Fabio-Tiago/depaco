@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { CheckCircle2, ShieldCheck, Zap, Sparkles, Star, Gift, Clock, MessageCircle } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Zap, Sparkles, Star, Gift, Clock, MessageCircle, Lock } from 'lucide-react';
 import { getPackById, PACKS, formatBRL, calcDesconto } from '@/lib/oferta';
 import { BotaoCheckout } from '@/components/BotaoCheckout';
 import { GaleriaPackAnimada } from '@/components/GaleriaPackAnimada';
+import { CheckoutElements } from '@/components/CheckoutElements';
 import { fetchDesenhosGaleria } from '@/lib/algolia';
 
 interface PageProps {
@@ -191,6 +192,34 @@ export default async function PackPage({ params }: PageProps) {
             ))}
           </div>
         </section>
+
+        {/* CHECKOUT EMBUTIDO (Eduzz Checkout Elements) */}
+        {pack.checkoutContentId && (
+          <section id="checkout" className="mb-16 scroll-mt-24">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-mustard-100 border-2 border-ink rounded-full text-sm font-bold mb-4 shadow-chunky-sm">
+                <Lock className="w-4 h-4" />
+                <span>Pagamento seguro</span>
+              </div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-ink">
+                Finalize sua compra
+              </h2>
+              <p className="text-ink/60 mt-2">
+                Acesso imediato após a confirmação do pagamento
+              </p>
+            </div>
+
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-white border-2 border-ink rounded-3xl shadow-chunky p-4 md:p-6">
+                <CheckoutElements contentId={pack.checkoutContentId} />
+              </div>
+
+              <p className="text-center text-sm text-ink/50 mt-4">
+                Processado pela Eduzz · Cartão, Pix ou boleto
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* FAQ */}
         <section id="faq" className="mb-16">
