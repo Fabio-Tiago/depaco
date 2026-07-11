@@ -130,29 +130,13 @@ export default async function PackPage({ params }: PageProps) {
                 <Zap className="w-4 h-4 text-coral" /> Acesso imediato
               </span>
             </div>
-            {/* Preview mockup do PDF — galeria animada com desenhos reais */}
+          </div>
+
+          {/* Preview mockup do PDF — galeria animada com desenhos reais */}
           <GaleriaPackAnimada
             desenhos={desenhosGaleria}
             restante={pack.total_desenhos - 4}
-          </div>
-
-          {/* Preview mockup do PDF */}
-          <div className="relative">
-            <div className="grid grid-cols-2 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="aspect-square bg-white border-2 border-ink rounded-2xl shadow-chunky overflow-hidden flex items-center justify-center text-6xl"
-                  style={{ transform: `rotate(${i % 2 === 0 ? '2deg' : '-2deg'})` }}
-                >
-                  {['🎨', '🦄', '🚀', '🦁'][i - 1]}
-                </div>
-              ))}
-            </div>
-            <div className="absolute -top-3 -right-3 bg-mustard border-2 border-ink rounded-2xl px-3 py-2 shadow-chunky-sm rotate-6">
-              <p className="text-xs font-bold text-ink">+ {pack.total_desenhos - 4}</p>
-            </div>
-          </div>
+          />
         </div>
 
         {/* O que está incluso */}
