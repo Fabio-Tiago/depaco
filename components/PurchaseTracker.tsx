@@ -44,10 +44,20 @@ export function PurchaseTracker({ valorPadrao = 0 }: { valorPadrao?: number }) {
       // ---- MOEDA ----
       moeda = params.get('moeda') || 'BRL';
 
-      // ---- ID DA TRANSAÇÃO (o que casa com o n8n) ----
+      // ---- CHAVE DA TRANSAÇÃO ----
+      // ⚠️ USAR A KEY, NÃO O transaction_id!
+      //
+      // A Eduzz tem DUAS numerações para a mesma venda:
+      //   URL:     transaction_id = 323223950
+      //   Webhook: transaction.id = 150644930   <- número DIFERENTE!
+      //
+      // O único campo igual nos dois lados é a chave:
+      //   URL:     transactionkey  = 5534cce8...
+      //   Webhook: transaction.key = 5534cce8...  ✅
+      //
+      // O n8n monta o event_id a partir da key. Aqui fazemos igual.
       transactionId =
-        params.get('transaction_id') ||   // nome real da Eduzz
-        params.get('transactionkey') ||   // fallback
+        params.get('transactionkey') ||
         params.get('chave') ||
         null;
     } catch {
