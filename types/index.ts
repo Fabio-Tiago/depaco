@@ -62,6 +62,12 @@ export interface PackOferta {
   preco_de?: number;
   url_checkout: string;
   preview_urls: string[];
+  /**
+   * ID do produto no Checkout Elements da Eduzz (ex: "6W4GX4VY0Z").
+   * Quando presente, o checkout é renderizado DENTRO do site, sem
+   * redirecionar. Se ausente, o botão manda para `url_checkout`.
+   */
+  checkoutContentId?: string;
   /** Palavras-chave que ativam este pack (minúsculas, sem acento). Vazio = pack geral. */
   keywords?: string[];
   /** Marca o pack que aparece quando nenhum temático casa. */
