@@ -2,6 +2,7 @@
 
 import { trackEvent } from '@/lib/fbpixel';
 import { gaEvent } from '@/lib/ga';
+import { comRastreioMeta } from '@/lib/metaTracking';
 import type { PackOferta } from '@/types';
 
 /**
@@ -45,10 +46,15 @@ export function BotaoCheckout({
       items: [{ item_id: pack.id, item_name: pack.nome ?? `Pack ${pack.id}` }],
     });
 
-    // Redireciona pro checkout (Eduzz).
+    // Redireciona pro checkout (Eduzz), levando junto os identificadores
+    // de rastreio do Meta (fbc/fbp). A Eduzz devolve esses valores no
+    // webhook, e a Conversions API os envia ao Meta — é o que permite
+    // atribuir a venda ao anúncio que gerou o clique.
+    const urlComRastreio = comRastreioMeta(pack.url_checkout);
+
     // Pequeno timeout dá tempo do evento sair antes de trocar de página.
     setTimeout(() => {
-      window.location.href = pack.url_checkout;
+      window.location.href = urlComRastreio;
     }, 150);
   }
 
