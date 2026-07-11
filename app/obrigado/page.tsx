@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { PurchaseTracker } from '@/components/PurchaseTracker';
 
 export const metadata: Metadata = {
@@ -20,6 +21,18 @@ export default function ObrigadoPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
+      {/*
+        Script do Checkout Elements (Eduzz).
+        Necessário para transações que NÃO finalizam na hora — Pix e boleto.
+        Sem ele, a Eduzz não consegue confirmar a conversão nesses casos.
+        Uma única página de obrigado atende todos os produtos: o script lê
+        os parâmetros da URL (transaction_id, valor...), que mudam por venda.
+      */}
+      <Script
+        src="https://cdn.eduzzcdn.com/sun/thankyou/thankyou.js"
+        strategy="afterInteractive"
+      />
+
       <PurchaseTracker valorPadrao={0} />
 
       <div className="max-w-lg mx-auto">
