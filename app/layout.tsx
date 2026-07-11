@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Fredoka, Plus_Jakarta_Sans } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { BotaoWhatsApp } from '@/components/BotaoWhatsApp';
 import { MetaPixel } from '@/components/MetaPixel';
 import { PixelPageView } from '@/components/PixelPageView';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
@@ -75,6 +76,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+
+        {/* Botão flutuante do WhatsApp — canto inferior direito.
+            No mobile sobe um pouco para não ficar atrás da barra de oferta. */}
+        <BotaoWhatsApp />
       </body>
     </html>
   );
