@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { RedesSociais } from '@/components/RedesSociais';
 import { Logo } from './Logo';
 
 export function Footer() {
@@ -11,6 +12,11 @@ export function Footer() {
             <p className="mt-3 text-sm text-ink/70 leading-relaxed">
               Desenhos para colorir prontos para imprimir. Diversão garantida para a criançada.
             </p>
+
+            {/* Redes sociais */}
+            <div className="mt-5">
+              <RedesSociais tamanho="sm" />
+            </div>
           </div>
 
           <div>
