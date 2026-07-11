@@ -14,6 +14,7 @@ import {
 import { searchClient, INDEX_NAME } from '@/lib/algolia';
 import { DesenhoCard } from '@/components/DesenhoCard';
 import { OfertaCard } from '@/components/OfertaCard';
+import { BuscaVaziaSugestoes } from '@/components/BuscaVaziaSugestoes';
 import type { AlgoliaDesenhoRecord } from '@/types';
 
 function Hit({ hit }: { hit: AlgoliaDesenhoRecord }) {
@@ -136,9 +137,14 @@ function BuscarContent() {
                 root: '',
                 list: 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4',
                 item: '',
-                emptyRoot: 'text-center py-20 text-ink/60',
+                // some com o "nenhum resultado" padrão: quem cuida disso
+                // agora é o BuscaVaziaSugestoes logo abaixo
+                emptyRoot: 'hidden',
               }}
             />
+
+            {/* Busca sem resultado -> sugere desenhos em vez de página vazia */}
+            <BuscaVaziaSugestoes />
 
             <div className="mt-10 flex justify-center">
               <Pagination
