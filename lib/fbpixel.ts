@@ -30,9 +30,27 @@ type StandardEvent =
   | 'Download'
   | 'Subscribe';
 
-export function trackEvent(event: StandardEvent, params?: Record<string, unknown>) {
+/**
+ * Dispara um evento padrão do Meta Pixel.
+ *
+ * O 3º parâmetro (eventID) é usado para DEDUPLICAÇÃO: quando o mesmo
+ * evento também é enviado pelo servidor (Conversions API), os dois
+ * precisam carregar o MESMO eventID — senão o Meta conta a conversão
+ * duas vezes.
+ *
+ * Ex: trackEvent('Purchase', { value: 12.9, currency: 'BRL' }, 'purchase_12345')
+ */
+export function trackEvent(
+  event: StandardEvent,
+  params?: Record<string, unknown>,
+  eventID?: string
+) {
   if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
-    window.fbq('track', event, params);
+    if (eventID) {
+      window.fbq('track', event, params, { eventID });
+    } else {
+      window.fbq('track', event, params);
+    }
   }
 }
 
