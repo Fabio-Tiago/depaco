@@ -1,267 +1,246 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { CheckCircle2, ShieldCheck, Zap, Sparkles, Star, Gift, Clock, MessageCircle } from 'lucide-react';
-import { getPackById, PACKS, formatBRL, calcDesconto } from '@/lib/oferta';
-import { BotaoCheckout } from '@/components/BotaoCheckout';
+import Image from 'next/image';
+import { Sparkles, Palette, Printer, Heart } from 'lucide-react';
+import { SearchAutocomplete } from '@/components/SearchAutocomplete';
+import { OfertaCard } from '@/components/OfertaCard';
+import { fetchPersonagensUnicos, resolverCapaPost, fetchCategoriasDisponiveis, fetchTotalDesenhos } from '@/lib/algolia';
+import { getAllBlogPosts } from '@/lib/blog';
+import { capitalize } from '@/lib/utils';
+import { getCategoriaMeta } from '@/lib/categorias';
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
+// A home faz queries ao Algolia server-side. Forçamos renderização em
+// runtime (não no build) para garantir que as env vars NEXT_PUBLIC_ALGOLIA_*
+// estejam disponíveis — senão as seções de categorias/personagens vêm vazias.
+export const dynamic = 'force-dynamic';
 
-export const revalidate = 86400;
+export default async function HomePage() {
+  // Em paralelo: personagens + posts recentes + categorias + total
+  const [personagens, postsRaw, categoriasSlugs, totalDesenhos] = await Promise.all([
+    fetchPersonagensUnicos(),
+    Promise.resolve(getAllBlogPosts().slice(0, 3)),
+    fetchCategoriasDisponiveis(),
+    fetchTotalDesenhos(),
+  ]);
 
-/** Gera uma página estática para cada pack do catálogo. */
-export async function generateStaticParams() {
-  return PACKS.map((pack) => ({ id: pack.id }));
-}
+  // Arredonda para baixo numa "casa redonda" para o selo "Mais de X".
+  // Ex: 2312 -> 2.000 ; 9540 -> 9.000 ; 760 -> 500.
+  function arredondarParaBaixo(n: number): number {
+    if (n >= 1000) return Math.floor(n / 1000) * 1000;
+    if (n >= 100) return Math.floor(n / 100) * 100;
+    return n;
+  }
+  const totalRedondo = arredondarParaBaixo(totalDesenhos);
+  const totalFormatado = totalRedondo.toLocaleString('pt-BR');
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = await params;
-  const pack = getPackById(id);
-  if (!pack) return { title: 'Pack não encontrado' };
+  // Categorias reais do Algolia + metadados visuais (nome/ícone/cor)
+  const categoriasDestaque = categoriasSlugs.map(getCategoriaMeta);
 
-  return {
-    title: `${pack.nome} — ${pack.total_desenhos} desenhos para colorir`,
-    description: `Receba ${pack.total_desenhos} desenhos exclusivos em PDF. Pronto para imprimir.`,
-    alternates: { canonical: `/pack/${pack.id}` },
-  };
-}
+  // Resolve a capa de cada post (acervo via related_personagem, ou fallback)
+  const posts = await Promise.all(
+    postsRaw.map(async (post) => ({
+      ...post,
+      capa: await resolverCapaPost({
+        cover: post.cover,
+        related_personagem: post.related_personagem,
+      }),
+    }))
+  );
 
-export default async function PackPage({ params }: PageProps) {
-  const { id } = await params;
-  const pack = getPackById(id);
-
-  if (!pack) notFound();
-
-  const desconto = pack.preco_de ? calcDesconto(pack.preco_de, pack.preco) : 0;
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://depaco.com.br';
-
-  // Imagem do produto para o Schema (exigida pelo Google nas
-  // listagens de comércio). Usa as previews do pack se houver;
-  // senão, cai para uma imagem padrão definida em env var.
-  // Precisa ser URL absoluta (https://...).
-  const imagemProduto =
-    pack.preview_urls && pack.preview_urls.length > 0
-      ? pack.preview_urls
-      : [process.env.NEXT_PUBLIC_OG_IMAGE_FALLBACK || `${siteUrl}/og-pack.png`];
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: pack.nome,
-    description: pack.descricao,
-    image: imagemProduto,
-    offers: {
-      '@type': 'Offer',
-      priceCurrency: 'BRL',
-      price: pack.preco,
-      availability: 'https://schema.org/InStock',
-      url: `${siteUrl}/pack/${pack.id}`,
-    },
-  };
+  const personagensDestaque = personagens.slice(0, 12);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {/* === HERO === */}
+      <section className="relative overflow-hidden">
+        {/* Decorações de fundo */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 right-10 w-32 h-32 bg-mustard-200/40 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 left-10 w-48 h-48 bg-coral-100/50 rounded-full blur-3xl" />
+        </div>
 
-      <div className="container mx-auto px-4 py-10">
-        {/* HERO da oferta */}
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
-          <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-terracotta text-cream rounded-full text-sm font-bold mb-4">
-              <Sparkles className="w-4 h-4" /> OFERTA LIMITADA
+        <div className="container mx-auto px-4 pt-12 pb-16 md:pt-20 md:pb-24 relative">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-mustard-100 border-2 border-ink rounded-full mb-6 shadow-chunky-sm">
+              <Sparkles className="w-4 h-4 text-terracotta" />
+              <span className="text-sm font-bold text-ink">
+                {totalRedondo > 0
+                  ? `Mais de ${totalFormatado} desenhos prontos`
+                  : 'Milhares de desenhos prontos'}
+              </span>
             </div>
 
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-ink leading-[1.05] mb-4">
-              {pack.total_desenhos}+ desenhos prontos pra{' '}
-              <span className="text-terracotta">imprimir e colorir</span>
+            <h1 className="font-display text-5xl md:text-7xl font-bold text-ink leading-[1.05] mb-6">
+              Qual desenho você quer{' '}
+              <span className="relative inline-block">
+                <span className="relative z-10 text-terracotta">colorir</span>
+                <span
+                  className="absolute -bottom-2 left-0 right-0 h-3 bg-mustard rounded-full -z-0"
+                  style={{ transform: 'skewX(-6deg)' }}
+                />
+              </span>{' '}
+              hoje?
             </h1>
 
-            <p className="text-xl text-ink/70 mb-8">
-              Receba imediatamente um PDF com {pack.total_desenhos} desenhos únicos.
-              Variedade de personagens, animais, profissões e datas comemorativas.
+            <p className="text-lg md:text-xl text-ink/70 mb-8 max-w-2xl mx-auto">
+              Digite o personagem, animal ou tema. A criançada já está esperando 🎨
             </p>
 
-            <div className="bg-white border-2 border-ink rounded-3xl p-6 shadow-chunky-lg mb-6">
-              <div className="flex items-baseline justify-between mb-1">
-                {pack.preco_de && (
-                  <span className="text-ink/50">
-                    De <span className="line-through">{formatBRL(pack.preco_de)}</span>
-                  </span>
-                )}
-                {desconto > 0 && (
-                  <span className="px-2 py-0.5 bg-mustard text-ink rounded-md text-xs font-bold border-2 border-ink">
-                    -{desconto}% OFF
-                  </span>
-                )}
-              </div>
-              <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-sm font-bold text-ink">Por</span>
-                <span className="text-5xl md:text-6xl font-display font-bold text-terracotta">
-                  {formatBRL(pack.preco)}
-                </span>
-                <span className="text-sm text-ink/60">à vista</span>
-              </div>
-              <p className="text-sm text-ink/60">ou em até 3x sem juros no cartão</p>
+            {/* Busca grande em destaque — versão home */}
+            <div className="max-w-2xl mx-auto">
+              <SearchAutocomplete placeholder="Digite: stitch, dinossauro, princesa, capivara..." />
             </div>
 
-            <BotaoCheckout
-              pack={pack}
-              className="block w-full px-8 py-5 bg-terracotta text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky-lg hover:translate-y-[-3px] transition-all text-center text-xl"
-            >
-              QUERO MEU PACK AGORA →
-            </BotaoCheckout>
-
-            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-ink/70">
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-coral" /> 7 dias de garantia
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Zap className="w-4 h-4 text-coral" /> Acesso imediato
-              </span>
-            </div>
-          </div>
-
-          {/* Preview mockup do PDF */}
-          <div className="relative">
-            <div className="grid grid-cols-2 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="aspect-square bg-white border-2 border-ink rounded-2xl shadow-chunky overflow-hidden flex items-center justify-center text-6xl"
-                  style={{ transform: `rotate(${i % 2 === 0 ? '2deg' : '-2deg'})` }}
+            {/* Atalhos populares */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm">
+              <span className="text-ink/50 font-medium">Populares:</span>
+              {['stitch', 'homem-aranha', 'capivara', 'bobbie-goods', 'hello-kitty'].map((p) => (
+                <Link
+                  key={p}
+                  href={`/buscar?q=${p}`}
+                  className="px-3 py-1 bg-white border-2 border-ink/10 rounded-full font-medium hover:border-ink hover:bg-mustard-50 transition-all"
                 >
-                  {['🎨', '🦄', '🚀', '🦁'][i - 1]}
-                </div>
+                  {capitalize(p.replace('-', ' '))}
+                </Link>
               ))}
-            </div>
-            <div className="absolute -top-3 -right-3 bg-mustard border-2 border-ink rounded-2xl px-3 py-2 shadow-chunky-sm rotate-6">
-              <p className="text-xs font-bold text-ink">+ {pack.total_desenhos - 4}</p>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* O que está incluso */}
-        <section className="mb-16">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-ink text-center mb-10">
-            O que você vai receber
-          </h2>
+      {/* === BENEFÍCIOS RÁPIDOS === */}
+      <section className="container mx-auto px-4 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: Sparkles, title: '100% Grátis', desc: 'Baixe sem cadastro' },
+            { icon: Printer, title: 'Pronto pra imprimir', desc: 'Tamanho A4' },
+            { icon: Palette, title: 'Qualidade alta', desc: 'Linhas nítidas' },
+            { icon: Heart, title: 'Feito com carinho', desc: 'Pra todas as idades' },
+          ].map(({ icon: Icon, title, desc }) => (
+            <div
+              key={title}
+              className="bg-white border-2 border-ink rounded-2xl p-4 text-center shadow-chunky-sm"
+            >
+              <Icon className="w-6 h-6 text-coral mx-auto mb-2" />
+              <p className="font-display font-bold text-ink text-sm">{title}</p>
+              <p className="text-xs text-ink/60 mt-1">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: Gift,
-                title: `${pack.total_desenhos} desenhos exclusivos`,
-                desc: 'Cuidadosamente selecionados e organizados por categoria',
-              },
-              {
-                icon: Clock,
-                title: 'Entrega imediata',
-                desc: 'Receba o link de download no email logo após o pagamento',
-              },
-              {
-                icon: Star,
-                title: 'Qualidade premium',
-                desc: 'Linhas nítidas, prontas para imprimir em A4 sem perda de qualidade',
-              },
-              {
-                icon: ShieldCheck,
-                title: '7 dias de garantia',
-                desc: 'Não gostou? Devolvemos 100% do seu dinheiro, sem perguntas',
-              },
-              {
-                icon: MessageCircle,
-                title: 'Suporte por WhatsApp',
-                desc: 'Tire suas dúvidas direto com a gente, sem robô',
-              },
-              {
-                icon: Sparkles,
-                title: 'Bônus surpresa',
-                desc: '+15 desenhos especiais de datas comemorativas inclusos',
-              },
-            ].map(({ icon: Icon, title, desc }) => (
-              <div
-                key={title}
-                className="bg-white border-2 border-ink rounded-2xl p-6 shadow-chunky-sm"
+      {/* === OFERTA COMPACTA === */}
+      <section className="container mx-auto px-4 mb-16">
+        <OfertaCard variant="compact" />
+      </section>
+
+      {/* === CATEGORIAS === */}
+      {categoriasDestaque.length > 0 && (
+        <section className="container mx-auto px-4 mb-16">
+          <div className="mb-6">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-ink">
+              Explorar por categoria
+            </h2>
+            <p className="text-ink/60 mt-1">Encontre rapidinho o que está procurando</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {categoriasDestaque.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/categorias/${cat.slug}`}
+                className={`${cat.cor} border-2 border-ink rounded-2xl p-4 text-center shadow-chunky-sm hover:shadow-chunky hover:-translate-y-1 transition-all`}
               >
-                <div className="w-12 h-12 bg-mustard-100 border-2 border-ink rounded-xl flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-terracotta" />
+                <div className="text-3xl mb-2">{cat.icon}</div>
+                <p className="font-display font-bold text-ink text-sm">{cat.nome}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* === PERSONAGENS POPULARES === */}
+      {personagensDestaque.length > 0 && (
+        <section className="container mx-auto px-4 mb-16">
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-ink">
+                Personagens favoritos
+              </h2>
+              <p className="text-ink/60 mt-1">Os mais procurados da galera</p>
+            </div>
+            <Link href="/buscar" className="hidden md:inline-flex text-coral font-bold hover:underline">
+              Ver todos →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+            {personagensDestaque.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/personagem/${p.slug}`}
+                className="group bg-white border-2 border-ink rounded-2xl p-4 text-center shadow-chunky-sm hover:shadow-chunky hover:-translate-y-1 transition-all"
+              >
+                <div className="aspect-square bg-mustard-50 rounded-xl mb-3 flex items-center justify-center text-4xl">
+                  🎨
                 </div>
-                <h3 className="font-display font-bold text-ink mb-2">{title}</h3>
-                <p className="text-sm text-ink/70">{desc}</p>
-              </div>
+                <p className="font-display font-bold text-ink text-sm truncate">
+                  {capitalize(p.nome)}
+                </p>
+                <p className="text-xs text-ink/50 mt-0.5">{p.total} desenhos</p>
+              </Link>
             ))}
           </div>
         </section>
+      )}
 
-        {/* FAQ */}
-        <section id="faq" className="mb-16">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-ink text-center mb-10">
-            Perguntas frequentes
-          </h2>
+      {/* === BLOG === */}
+      {posts.length > 0 && (
+        <section className="container mx-auto px-4 mb-16">
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-ink">
+                Dicas e ideias
+              </h2>
+              <p className="text-ink/60 mt-1">Conteúdos pra deixar a hora de colorir mais divertida</p>
+            </div>
+            <Link href="/blog" className="hidden md:inline-flex text-coral font-bold hover:underline">
+              Ver todos →
+            </Link>
+          </div>
 
-          <div className="max-w-3xl mx-auto space-y-3">
-            {[
-              {
-                q: 'Como recebo os desenhos depois da compra?',
-                a: 'Logo após a confirmação do pagamento, você recebe um email com o link para baixar o PDF completo. Também fica disponível na sua conta da plataforma de pagamento.',
-              },
-              {
-                q: 'Posso imprimir quantas vezes quiser?',
-                a: 'Sim! Você pode imprimir os desenhos quantas vezes quiser, para uso pessoal, da família, da escola ou em festas infantis.',
-              },
-              {
-                q: 'Funciona em qualquer impressora?',
-                a: 'Sim. Os desenhos foram formatados em A4 padrão e funcionam em qualquer impressora doméstica ou profissional. Recomendamos papel sulfite branco comum.',
-              },
-              {
-                q: 'Pra que idades os desenhos são indicados?',
-                a: 'O pack tem variedade pensada de 2 a 12 anos. Os desenhos são marcados por faixa etária no PDF, com desenhos mais simples para os pequenos e mais detalhados para os maiores.',
-              },
-              {
-                q: 'E se eu não gostar?',
-                a: 'Oferecemos garantia incondicional de 7 dias. Se não gostar por qualquer motivo, devolvemos 100% do valor pago, sem perguntas.',
-              },
-              {
-                q: 'Posso pagar via Pix ou boleto?',
-                a: 'Sim! Aceitamos cartão de crédito (até 3x sem juros), Pix e boleto bancário através da nossa plataforma de pagamentos.',
-              },
-            ].map((item) => (
-              <details
-                key={item.q}
-                className="bg-white border-2 border-ink rounded-2xl p-5 shadow-chunky-sm group"
+          <div className="grid md:grid-cols-3 gap-4">
+            {posts.map((post) => (
+              <Link
+                key={post.slug}
+                href={`/blog/${post.slug}`}
+                className="block bg-white border-2 border-ink rounded-2xl overflow-hidden shadow-chunky-sm hover:shadow-chunky hover:-translate-y-1 transition-all"
               >
-                <summary className="font-display font-bold text-ink cursor-pointer list-none flex items-center justify-between">
-                  {item.q}
-                  <span className="text-coral text-xl group-open:rotate-45 transition-transform">+</span>
-                </summary>
-                <p className="mt-3 text-ink/70">{item.a}</p>
-              </details>
+                <div className="aspect-video bg-mustard-100 relative">
+                  {post.capa && (
+                    <Image
+                      src={post.capa}
+                      alt={post.title}
+                      fill
+                      className="object-contain p-3"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="font-display font-bold text-ink mb-1 line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-sm text-ink/60 line-clamp-2">{post.description}</p>
+                </div>
+              </Link>
             ))}
           </div>
         </section>
+      )}
 
-        {/* CTA final */}
-        <section className="bg-gradient-to-br from-mustard-100 to-coral-100 border-2 border-ink rounded-3xl p-8 md:p-12 text-center shadow-chunky-lg">
-          <h2 className="font-display text-3xl md:text-5xl font-bold text-ink mb-4">
-            Pronto pra começar a diversão?
-          </h2>
-          <p className="text-lg text-ink/70 mb-8 max-w-xl mx-auto">
-            {pack.total_desenhos} desenhos por {formatBRL(pack.preco)}. Acesso imediato. 7 dias de garantia.
-          </p>
-          <BotaoCheckout
-            pack={pack}
-            className="inline-block px-10 py-5 bg-terracotta text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky-lg hover:translate-y-[-3px] transition-all text-xl"
-          >
-            QUERO MEU PACK AGORA →
-          </BotaoCheckout>
-        </section>
-      </div>
+      {/* Espaço para sticky-mobile não cobrir conteúdo */}
+      <div className="h-20 lg:hidden" />
+      <OfertaCard variant="sticky-mobile" />
     </>
   );
 }
