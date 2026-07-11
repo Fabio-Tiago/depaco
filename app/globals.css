@@ -161,3 +161,20 @@
      evitando um flash antes da animação iniciar */
   animation: fade-in-galeria 0.6s ease-in backwards;
 }
+
+/* Carrossel largo da home — scroll contínuo lento */
+@keyframes carrossel-home-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.carrossel-home-track {
+  animation: carrossel-home-scroll 60s linear infinite;
+}
+.carrossel-home:hover .carrossel-home-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .carrossel-home-track {
+    animation: none;
+  }
+}
