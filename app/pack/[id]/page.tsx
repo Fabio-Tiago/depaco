@@ -49,8 +49,8 @@ export default async function PackPage({ params }: PageProps) {
       ? pack.preview_urls
       : [process.env.NEXT_PUBLIC_OG_IMAGE_FALLBACK || `${siteUrl}/og-pack.png`];
   
-  // Desenhos reais para a galeria animada (server-side = bom p/ SEO)
-  const desenhosGaleria = await fetchDesenhosGaleria(24);
+  // Desenhos variados (1 de cada categoria, intercalados) para a galeria
+  const desenhosGaleria = await fetchDesenhosGaleria(6);
   
   const jsonLd = {
     '@context': 'https://schema.org',
