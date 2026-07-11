@@ -36,16 +36,29 @@ export default async function PackPage({ params }: PageProps) {
 
   const desconto = pack.preco_de ? calcDesconto(pack.preco_de, pack.preco) : 0;
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://depaco.com.br';
+
+  // Imagem do produto para o Schema (exigida pelo Google nas
+  // listagens de comércio). Usa as previews do pack se houver;
+  // senão, cai para uma imagem padrão definida em env var.
+  // Precisa ser URL absoluta (https://...).
+  const imagemProduto =
+    pack.preview_urls && pack.preview_urls.length > 0
+      ? pack.preview_urls
+      : [process.env.NEXT_PUBLIC_OG_IMAGE_FALLBACK || `${siteUrl}/og-pack.png`];
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: pack.nome,
     description: pack.descricao,
+    image: imagemProduto,
     offers: {
       '@type': 'Offer',
       priceCurrency: 'BRL',
       price: pack.preco,
       availability: 'https://schema.org/InStock',
+      url: `${siteUrl}/pack/${pack.id}`,
     },
   };
 
