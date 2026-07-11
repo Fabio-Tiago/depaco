@@ -12,9 +12,14 @@ type Desenho = {
 };
 
 /**
- * Galeria animada do pack: mostra 4 desenhos num grid e vai trocando
- * UM card de cada vez (escalonado), a cada ~3s, criando um slideshow
- * suave que não pisca tudo junto.
+ * Galeria animada do pack: mostra 4 desenhos num grid e troca TODOS
+ * a cada 3s, com um leve escalonamento no fade (cada card entra com
+ * um pequeno atraso). Trocar os 4 de uma vez comunica de imediato que
+ * o acervo é grande — o usuário não precisa esperar um ciclo longo.
+ *
+ * Os desenhos chegam já INTERCALADOS por categoria (do servidor) e, a
+ * cada troca, o componente sorteia um conjunto novo priorizando
+ * categorias diferentes entre si (animal, jogador, personagem...).
  *
  * SEO: as 4 imagens iniciais vêm renderizadas do servidor (estão no
  * HTML com alt), então o Google as vê. A rotação é só enriquecimento
@@ -42,42 +47,48 @@ export function GaleriaPackAnimada({
     ).matches;
     if (prefersReduced) return;
 
-    let slotAtual = 0;
+    // Sorteia um conjunto NOVO de 4 desenhos, priorizando categorias
+    // diferentes entre si e evitando repetir os que estão na tela.
+    function sortearQuatro(atuais: number[]): number[] {
+      const naTela = new Set(atuais);
+      const escolhidos: number[] = [];
+      const catsUsadas = new Set<string>();
 
+      // pool embaralhado, sem os que já estão visíveis
+      const pool = desenhos
+        .map((d, i) => ({ d, i }))
+        .filter(({ i }) => !naTela.has(i))
+        .sort(() => Math.random() - 0.5);
+
+      // 1ª passada: um de cada categoria (garante variedade)
+      for (const { d, i } of pool) {
+        if (escolhidos.length === 4) break;
+        const cat = d.categorias || '';
+        if (!catsUsadas.has(cat)) {
+          escolhidos.push(i);
+          catsUsadas.add(cat);
+        }
+      }
+
+      // 2ª passada: se faltou preencher, aceita repetir categoria
+      if (escolhidos.length < 4) {
+        for (const { i } of pool) {
+          if (escolhidos.length === 4) break;
+          if (!escolhidos.includes(i)) escolhidos.push(i);
+        }
+      }
+
+      // se ainda faltar (pool pequeno), completa com os atuais
+      while (escolhidos.length < 4) {
+        escolhidos.push(atuais[escolhidos.length]);
+      }
+
+      return escolhidos;
+    }
+
+    // Troca os 4 de uma vez a cada 3s — comunica volume de imediato
     const timer = setInterval(() => {
-      setSlots((prev) => {
-        const idxVisiveis = new Set(prev);
-
-        // categorias já presentes no grid (ignorando o slot que vai trocar)
-        const catsVisiveis = new Set(
-          prev
-            .filter((_, s) => s !== slotAtual)
-            .map((i) => desenhos[i]?.categorias)
-            .filter(Boolean)
-        );
-
-        // prioriza candidatos de categoria que NÃO está no grid
-        const candidatos = desenhos
-          .map((d, i) => ({ d, i }))
-          .filter(({ d, i }) => !idxVisiveis.has(i) && !catsVisiveis.has(d.categorias));
-
-        // se não houver, aceita qualquer um que não esteja visível
-        const pool =
-          candidatos.length > 0
-            ? candidatos
-            : desenhos
-                .map((d, i) => ({ d, i }))
-                .filter(({ i }) => !idxVisiveis.has(i));
-
-        if (pool.length === 0) return prev;
-
-        const escolhido = pool[Math.floor(Math.random() * pool.length)];
-
-        const novo = [...prev];
-        novo[slotAtual] = escolhido.i;
-        slotAtual = (slotAtual + 1) % 4; // próximo card na próxima vez
-        return novo;
-      });
+      setSlots((prev) => sortearQuatro(prev));
     }, 3000);
 
     return () => clearInterval(timer);
@@ -127,6 +138,9 @@ export function GaleriaPackAnimada({
                 sizes="(max-width: 1024px) 45vw, 22vw"
                 className="object-contain p-2 animate-fade-in"
                 loading="lazy"
+                // micro-atraso por card: os 4 trocam juntos, mas entram
+                // em cascata suave (0ms, 80ms, 160ms, 240ms)
+                style={{ animationDelay: `${slot * 80}ms` }}
               />
             </div>
           );
