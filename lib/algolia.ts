@@ -325,12 +325,18 @@ export async function fetchDesenhosCarrosselHome(porCategoria = 8) {
 
 /**
  * Busca desenhos por filtro livre do Algolia (usado nas páginas SEO de nicho).
- * Ex: filtros='subcategoria:"fofo-cozy"' ou 'personagem:gatinho-lendo-livro'
+ *
+ * FALLBACK IMPORTANTE: se o filtro não retornar nada — o que acontece
+ * quando o campo não está marcado como "attributeForFaceting" no painel
+ * do Algolia — cai para uma busca textual. Assim a página nunca fica
+ * vazia por causa de configuração de índice.
  */
 export async function fetchDesenhosPorFiltro(
   filtros: string,
-  limit = 48
+  limit = 48,
+  fallbackQuery = ''
 ): Promise<AlgoliaDesenhoRecord[]> {
+  // 1ª tentativa: filtro por faceta (mais preciso)
   try {
     const { results } = await searchClient.search({
       requests: [
@@ -338,6 +344,25 @@ export async function fetchDesenhosPorFiltro(
           indexName: INDEX_NAME,
           query: '',
           filters: filtros,
+          hitsPerPage: limit,
+        },
+      ],
+    });
+    const first = results[0] as { hits?: unknown[] };
+    const hits = (first?.hits || []) as AlgoliaDesenhoRecord[];
+    if (hits.length > 0) return hits;
+  } catch {
+    // filtro inválido (campo não facetável) — segue para o fallback
+  }
+
+  // 2ª tentativa: busca textual (funciona sem configurar faceta)
+  if (!fallbackQuery) return [];
+  try {
+    const { results } = await searchClient.search({
+      requests: [
+        {
+          indexName: INDEX_NAME,
+          query: fallbackQuery,
           hitsPerPage: limit,
         },
       ],
@@ -358,13 +383,37 @@ export async function fetchDesenhosFofosPorBichinho(
   termo: string,
   limit = 48
 ): Promise<AlgoliaDesenhoRecord[]> {
+  const FILTRO = 'tema:"fofo" OR tema:"cozy" OR tema:"bobbie-goods"';
+
+  // 1ª tentativa: termo + filtro de tema (mais preciso)
   try {
     const { results } = await searchClient.search({
       requests: [
         {
           indexName: INDEX_NAME,
           query: termo,
-          filters: `subcategoria:"fofo-cozy"`,
+          filters: FILTRO,
+          hitsPerPage: limit,
+          restrictSearchableAttributes: ['personagem', 'subject_slug'],
+        },
+      ],
+    });
+    const first = results[0] as { hits?: unknown[] };
+    const hits = (first?.hits || []) as AlgoliaDesenhoRecord[];
+    if (hits.length > 0) return hits;
+  } catch {
+    // filtro pode não ser facetável — segue para o fallback
+  }
+
+  // 2ª tentativa: só o termo (sem filtro). Como os slugs dos fofos são
+  // "gatinho-lendo-livro", "cachorrinho-no-banho" etc., buscar "gatinho"
+  // já traz o conjunto certo.
+  try {
+    const { results } = await searchClient.search({
+      requests: [
+        {
+          indexName: INDEX_NAME,
+          query: termo,
           hitsPerPage: limit,
           restrictSearchableAttributes: ['personagem', 'subject_slug'],
         },
