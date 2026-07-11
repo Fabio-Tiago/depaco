@@ -1,4 +1,5 @@
 import { algoliasearch } from 'algoliasearch';
+import type { AlgoliaDesenhoRecord } from '@/types';
 
 /**
  * Cliente Algolia compartilhado entre Server e Client Components.
@@ -320,4 +321,58 @@ export async function fetchPopularesHome(limit = 10): Promise<string[]> {
  */
 export async function fetchDesenhosCarrosselHome(porCategoria = 8) {
   return fetchDesenhosGaleria(porCategoria);
+}
+
+/**
+ * Busca desenhos por filtro livre do Algolia (usado nas páginas SEO de nicho).
+ * Ex: filtros='subcategoria:"fofo-cozy"' ou 'personagem:gatinho-lendo-livro'
+ */
+export async function fetchDesenhosPorFiltro(
+  filtros: string,
+  limit = 48
+): Promise<AlgoliaDesenhoRecord[]> {
+  try {
+    const { results } = await searchClient.search({
+      requests: [
+        {
+          indexName: INDEX_NAME,
+          query: '',
+          filters: filtros,
+          hitsPerPage: limit,
+        },
+      ],
+    });
+    const first = results[0] as { hits?: unknown[] };
+    return (first?.hits || []) as AlgoliaDesenhoRecord[];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Busca desenhos fofos cujo slug do personagem contenha um termo.
+ * Usado para as sub-páginas por bichinho (gatinhos, cachorrinhos...).
+ * Ex: termo='gatinho' -> pega gatinho-lendo-livro, gatinho-na-caixa, etc.
+ */
+export async function fetchDesenhosFofosPorBichinho(
+  termo: string,
+  limit = 48
+): Promise<AlgoliaDesenhoRecord[]> {
+  try {
+    const { results } = await searchClient.search({
+      requests: [
+        {
+          indexName: INDEX_NAME,
+          query: termo,
+          filters: `subcategoria:"fofo-cozy"`,
+          hitsPerPage: limit,
+          restrictSearchableAttributes: ['personagem', 'subject_slug'],
+        },
+      ],
+    });
+    const first = results[0] as { hits?: unknown[] };
+    return (first?.hits || []) as AlgoliaDesenhoRecord[];
+  } catch {
+    return [];
+  }
 }
