@@ -281,3 +281,43 @@ export async function fetchDesenhosGaleria(porCategoria = 6) {
     return [];
   }
 }
+
+/**
+ * Personagens mais frequentes no acervo — usados como chips "Populares"
+ * na home. Gerado no SERVIDOR (Server Component): o HTML já sai com os
+ * links prontos, então o Google indexa e não custa JS no cliente.
+ * Uma única requisição (facet), sem impacto em performance.
+ */
+export async function fetchPopularesHome(limit = 10): Promise<string[]> {
+  try {
+    const { results } = await searchClient.search({
+      requests: [
+        {
+          indexName: INDEX_NAME,
+          query: '',
+          hitsPerPage: 0,
+          facets: ['personagem'],
+          maxValuesPerFacet: 100,
+        },
+      ],
+    });
+    const first = results[0] as { facets?: Record<string, Record<string, number>> };
+    const facet = first?.facets?.personagem || {};
+
+    return Object.entries(facet)
+      .sort((a, b) => b[1] - a[1]) // mais desenhos primeiro
+      .slice(0, limit)
+      .map(([slug]) => slug);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Desenhos variados para o carrossel largo da home.
+ * Reaproveita a lógica de intercalar categorias (mesma da galeria do pack),
+ * garantindo que o carrossel mostre um mix e não uma categoria só.
+ */
+export async function fetchDesenhosCarrosselHome(porCategoria = 8) {
+  return fetchDesenhosGaleria(porCategoria);
+}
