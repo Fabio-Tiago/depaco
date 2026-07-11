@@ -150,3 +150,12 @@
   filter: brightness(1.12) contrast(1.15);
   background-color: #ffffff;
 }
+
+/* Fade suave ao trocar imagem na galeria animada do pack */
+@keyframes fade-in-galeria {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in-galeria 0.6s ease-in;
+}
