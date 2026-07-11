@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { CheckCircle2, ShieldCheck, Zap, Sparkles, Star, Gift, Clock, MessageCircle } from 'lucide-react';
 import { getPackById, PACKS, formatBRL, calcDesconto } from '@/lib/oferta';
 import { BotaoCheckout } from '@/components/BotaoCheckout';
+import { GaleriaPackAnimada } from '@/components/GaleriaPackAnimada';
+import { fetchDesenhosGaleria } from '@/lib/algolia';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -46,7 +48,10 @@ export default async function PackPage({ params }: PageProps) {
     pack.preview_urls && pack.preview_urls.length > 0
       ? pack.preview_urls
       : [process.env.NEXT_PUBLIC_OG_IMAGE_FALLBACK || `${siteUrl}/og-pack.png`];
-
+  
+  // Desenhos reais para a galeria animada (server-side = bom p/ SEO)
+  const desenhosGaleria = await fetchDesenhosGaleria(24);
+  
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -125,6 +130,10 @@ export default async function PackPage({ params }: PageProps) {
                 <Zap className="w-4 h-4 text-coral" /> Acesso imediato
               </span>
             </div>
+            {/* Preview mockup do PDF — galeria animada com desenhos reais */}
+          <GaleriaPackAnimada
+            desenhos={desenhosGaleria}
+            restante={pack.total_desenhos - 4}
           </div>
 
           {/* Preview mockup do PDF */}
