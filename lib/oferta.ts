@@ -19,6 +19,9 @@ export const PACK_GERAL: PackOferta = {
   preco: Number(process.env.NEXT_PUBLIC_PACK_PRICE) || 19.9,
   preco_de: 39.9,
   url_checkout: process.env.NEXT_PUBLIC_PACK_CHECKOUT_URL || '#',
+  // ID do Checkout Elements (Eduzz). Se definido, o checkout aparece
+  // embutido na página do pack, sem redirecionar para fora do site.
+  checkoutContentId: process.env.NEXT_PUBLIC_PACK_CONTENT_ID,
   preview_urls: [],
   isDefault: true,
 };
@@ -32,6 +35,7 @@ export const PACK_ESPORTE: PackOferta = {
   preco: Number(process.env.NEXT_PUBLIC_PACK_ESPORTE_PRICE) || 14.9,
   preco_de: 29.9,
   url_checkout: process.env.NEXT_PUBLIC_PACK_ESPORTE_CHECKOUT_URL || '#',
+  checkoutContentId: process.env.NEXT_PUBLIC_PACK_ESPORTE_CONTENT_ID,
   preview_urls: [],
   keywords: [
     'copa', 'futebol', 'olimpiada', 'olimpiadas', 'esporte', 'esportes',
