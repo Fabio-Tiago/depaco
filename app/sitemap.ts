@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { fetchAllDesenhoIds, fetchPersonagensUnicos, fetchCategoriasDisponiveis } from '@/lib/algolia';
 import { getAllBlogSlugs } from '@/lib/blog';
+import { PAGINAS_FOFAS } from '@/lib/paginasFofas';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://depaco.com.br';
 
@@ -19,6 +20,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/blog`, lastModified: now, changeFrequency: 'daily', priority: 0.7 },
     { url: `${SITE_URL}/pack/mega-pack-desenhos-para-colorir`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
   ];
+
+  // Páginas SEO do nicho fofo/kawaii (alto volume de busca, prioridade alta)
+  const paginasFofas: MetadataRoute.Sitemap = PAGINAS_FOFAS.map((p) => ({
+    url: `${SITE_URL}/${p.slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.9,
+  }));
 
   // Tudo dinâmico em paralelo (inclui categorias reais do Algolia)
   const [desenhoIds, personagens, blogSlugs, categoriasSlugs] = await Promise.all([
@@ -56,5 +65,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...staticPages, ...categorias, ...desenhoUrls, ...personagemUrls, ...blogUrls];
+  return [
+    ...staticPages,
+    ...paginasFofas,
+    ...categorias,
+    ...desenhoUrls,
+    ...personagemUrls,
+    ...blogUrls,
+  ];
 }
