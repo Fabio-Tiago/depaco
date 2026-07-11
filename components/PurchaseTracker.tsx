@@ -14,36 +14,41 @@ import { gaEvent } from '@/lib/ga';
  *   1. daqui (Pixel do navegador)
  *   2. do servidor (n8n -> Conversions API, via webhook da Eduzz)
  *
- * Para o Meta não contar a venda 2x, os dois precisam mandar o MESMO
- * event_id. O n8n usa `purchase_{id_da_fatura}` — então aqui usamos
- * exatamente o mesmo formato, lendo o ID da querystring.
+ * Para o Meta não contar 2x, os dois mandam o MESMO event_id.
  *
- * Se o ID não vier na URL, NÃO disparamos o Purchase do navegador:
- * é melhor confiar só na CAPI (mais confiável) do que arriscar uma
- * conversão duplicada inflando os relatórios.
+ * ⚠️ ATENÇÃO AO ID CERTO:
+ * A Eduzz devolve DOIS identificadores diferentes:
+ *   - `transaction_id` (ex: 323223870)  <- ESTE, na URL de obrigado
+ *   - id da fatura (data.id no webhook) <- OUTRO número!
+ *
+ * O n8n foi configurado para usar `data.transaction.id`, que é o mesmo
+ * número do `transaction_id` da URL. Os dois lados batem.
+ *
+ * Parâmetros reais que a Eduzz manda na URL de retorno:
+ *   transaction_id, valor, moeda, fbp, email_comprador, nome_comprador
  * ─────────────────────────────────────────────────────────────────
  */
 export function PurchaseTracker({ valorPadrao = 0 }: { valorPadrao?: number }) {
   useEffect(() => {
     let valor = valorPadrao;
-    let pedidoId: string | null = null;
+    let moeda = 'BRL';
+    let transactionId: string | null = null;
 
     try {
       const params = new URLSearchParams(window.location.search);
 
-      // ---- VALOR ----
-      const v = params.get('valor') || params.get('value') || params.get('price');
+      // ---- VALOR (a Eduzz manda como "valor") ----
+      const v = params.get('valor') || params.get('valor_moeda') || params.get('value');
       if (v && !Number.isNaN(Number(v))) valor = Number(v);
 
-      // ---- ID DO PEDIDO ----
-      // Precisa ser o MESMO id que a Eduzz manda no webhook (data.id).
-      pedidoId =
-        params.get('invoice_id') ||
-        params.get('trans_cod') ||
-        params.get('transaction_id') ||
-        params.get('order_id') ||
-        params.get('pedido') ||
-        params.get('id') ||
+      // ---- MOEDA ----
+      moeda = params.get('moeda') || 'BRL';
+
+      // ---- ID DA TRANSAÇÃO (o que casa com o n8n) ----
+      transactionId =
+        params.get('transaction_id') ||   // nome real da Eduzz
+        params.get('transactionkey') ||   // fallback
+        params.get('chave') ||
         null;
     } catch {
       // querystring inválida — segue com os padrões
@@ -51,27 +56,27 @@ export function PurchaseTracker({ valorPadrao = 0 }: { valorPadrao?: number }) {
 
     // ---- GA4: sempre dispara (não sofre com duplicação) ----
     gaEvent('purchase', {
-      currency: 'BRL',
+      currency: moeda,
       value: valor,
-      transaction_id: pedidoId || 'eduzz-' + Date.now(),
+      transaction_id: transactionId || 'eduzz-' + Date.now(),
     });
 
     // ---- Meta Pixel ----
-    if (pedidoId) {
-      // Tem o ID -> dispara com eventID; o Meta deduplica com a CAPI
+    if (transactionId) {
+      // Mesmo event_id que o n8n usa -> o Meta deduplica
       trackEvent(
         'Purchase',
-        { value: valor, currency: 'BRL' },
-        `purchase_${pedidoId}` // MESMO formato usado no n8n
+        { value: valor, currency: moeda },
+        `purchase_${transactionId}`
       );
     } else {
-      // Sem ID -> não dispara. A CAPI já registra a venda no servidor,
-      // e disparar aqui sem eventID faria o Meta contar 2x.
+      // Sem o id não dá para deduplicar. A CAPI (servidor) já registra
+      // a venda, então é mais seguro NÃO disparar aqui do que arriscar
+      // contar a conversão duas vezes.
       if (process.env.NODE_ENV === 'development') {
         console.warn(
-          '[PurchaseTracker] ID do pedido ausente na URL — Purchase do navegador ' +
-            'NÃO disparado (a CAPI registra a venda). Configure a Eduzz para ' +
-            'repassar o id na URL de retorno.'
+          '[PurchaseTracker] transaction_id ausente na URL — Purchase do ' +
+            'navegador NÃO disparado (a CAPI registra a venda).'
         );
       }
     }
