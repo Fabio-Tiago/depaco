@@ -16,12 +16,14 @@ export interface CategoriaMeta {
 const CATEGORIA_META: Record<string, Omit<CategoriaMeta, 'slug'>> = {
   personagem_filme: { nome: 'Personagens de Filme', icon: '🎬', cor: 'bg-coral-100' },
   personagem_anime: { nome: 'Anime e Mangá', icon: '⚡', cor: 'bg-mustard-100' },
+  personagem: { nome: 'Personagens Fofos', icon: '🧸', cor: 'bg-coral-100' },
   animal: { nome: 'Animais', icon: '🐾', cor: 'bg-sky-100' },
   tema_sazonal: { nome: 'Datas Comemorativas', icon: '🎉', cor: 'bg-terracotta-100' },
   objeto: { nome: 'Objetos', icon: '🧩', cor: 'bg-mustard-100' },
   natureza: { nome: 'Natureza', icon: '🌿', cor: 'bg-sky-100' },
   educacional: { nome: 'Educacional', icon: '📚', cor: 'bg-coral-100' },
   humano: { nome: 'Profissões', icon: '👩‍⚕️', cor: 'bg-mustard-100' },
+  'copa-do-mundo': { nome: 'Futebol e Copa', icon: '⚽', cor: 'bg-sky-100' },
 };
 
 // Visual padrão para categorias ainda sem metadados definidos.
