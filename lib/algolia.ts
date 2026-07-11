@@ -216,3 +216,32 @@ export async function fetchTotalDesenhos(): Promise<number> {
     return 0;
   }
 }
+
+/**
+ * Busca uma leva de desenhos variados para a galeria animada do pack.
+ * Traz mais do que os 4 visíveis para poder rotacionar entre eles.
+ * Roda no servidor (Server Component) — as imagens vêm no HTML (bom p/ SEO).
+ */
+export async function fetchDesenhosGaleria(limit = 24) {
+  try {
+    const { results } = await searchClient.search({
+      requests: [
+        {
+          indexName: INDEX_NAME,
+          query: '',
+          hitsPerPage: limit,
+          attributesToRetrieve: ['objectID', 'personagem', 'url_imagem', 'alt_pt'],
+        },
+      ],
+    });
+    const first = results[0] as { hits?: unknown[] };
+    return (first?.hits || []) as Array<{
+      objectID: string;
+      personagem: string;
+      url_imagem: string;
+      alt_pt?: string;
+    }>;
+  } catch {
+    return [];
+  }
+}
