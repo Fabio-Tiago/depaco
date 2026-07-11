@@ -157,6 +157,46 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* === DESTAQUE: DESENHOS FOFOS (alto volume de busca) === */}
+      <section className="container mx-auto px-4 mb-16">
+        <div className="bg-mustard-100 border-2 border-ink rounded-3xl p-6 md:p-8 shadow-chunky">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-5">
+            <div className="flex-1">
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-ink">
+                🧸 Desenhos fofos para colorir
+              </h2>
+              <p className="text-ink/70 mt-1">
+                Bichinhos fofinhos em cenas do dia a dia — os preferidos da criançada
+              </p>
+            </div>
+            <Link
+              href="/desenhos-fofos-para-colorir"
+              className="inline-flex items-center justify-center px-6 py-3 bg-terracotta text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky hover:translate-y-[-2px] transition-all whitespace-nowrap"
+            >
+              Ver todos →
+            </Link>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {[
+              { slug: 'gatinhos-fofos-para-colorir', label: '🐱 Gatinhos fofos' },
+              { slug: 'cachorrinhos-fofos-para-colorir', label: '🐶 Cachorrinhos fofos' },
+              { slug: 'animais-fofos-para-colorir', label: '🐾 Animais fofos' },
+              { slug: 'desenhos-kawaii-para-colorir', label: '✨ Kawaii' },
+              { slug: 'desenhos-fofos-para-imprimir', label: '🖨️ Para imprimir' },
+            ].map((l) => (
+              <Link
+                key={l.slug}
+                href={`/${l.slug}`}
+                className="px-4 py-2 bg-white border-2 border-ink rounded-full font-bold text-sm shadow-chunky-sm hover:-translate-y-0.5 hover:shadow-chunky transition-all"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* === CATEGORIAS === */}
       {categoriasDestaque.length > 0 && (
         <section className="container mx-auto px-4 mb-16">
