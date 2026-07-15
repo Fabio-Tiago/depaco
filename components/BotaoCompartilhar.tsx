@@ -236,8 +236,7 @@ export default function BotaoCompartilhar({
                     registrarShare(rede.nome.toLowerCase());
                     setMenuAberto(false);
                   }}
-                  className="flex flex-col items-center gap-2 rounded-2xl border-2 p-3
-                             transition hover:-translate-y-1"
+                  className="flex flex-col items-center gap-2 rounded-2xl border-2 p-3 transition hover:-translate-y-1"
                   style={{ borderColor: CORES.ink, backgroundColor: '#FFFFFF' }}
                 >
                   <span
@@ -266,8 +265,7 @@ export default function BotaoCompartilhar({
             <button
               type="button"
               onClick={copiarLink}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl
-                         border-2 py-3 font-bold transition hover:opacity-80"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 py-3 font-bold transition hover:opacity-80"
               style={{
                 borderColor: CORES.ink,
                 backgroundColor: copiado ? CORES.sky : '#FFFFFF',
