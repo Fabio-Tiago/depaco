@@ -10,6 +10,8 @@ import { OfertaCard } from '@/components/OfertaCard';
 import { capitalize, formatarNome, resolverAltDesenho } from '@/lib/utils';
 import type { AlgoliaDesenhoRecord } from '@/types';
 import { resolvePack } from '@/lib/oferta';
+import PopupOfertaDownload from '@/components/PopupOfertaDownload';
+
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -153,8 +155,24 @@ export default async function DesenhoPage({ params }: PageProps) {
               )}
             </div>
 
-            {/* Ações de download/impressão */}
-            <DesenhoActions imageUrl={desenho.url_imagem || ''} filename={filename} />
+            <div className="flex flex-wrap gap-3">
+              <DesenhoActions imageUrl={desenho.url_imagem || ''} filename={filename} />
+              <PopupOfertaDownload
+                urlDownload={desenho.url_imagem || ''}
+                nomeArquivo={filename}
+                personagem={personagem}
+                pack={{
+                  id: pack.id,
+                  nome: pack.nome,
+                  total_desenhos: pack.total_desenhos,
+                  preco: pack.preco,
+                  preco_de: pack.preco_de,
+                  url_checkout: pack.url_checkout,
+                  tipo_item: 'desenhos',
+                }}
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-coral text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky hover:-translate-y-1 transition-all"
+              />
+            </div>
 
             {/* Texto SEO — descrição do desenho */}
             <div className="mt-10 prose prose-ink max-w-none">
