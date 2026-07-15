@@ -85,18 +85,36 @@ export default function PopupOfertaDownload({
   const itemPlural = pack.tipo_item || 'desenhos';
 
   // ---- Dispara o download de fato ----
-  const baixarDesenho = useCallback(() => {
+  const baixarDesenho = useCallback(async () => {
     setBaixando(true);
 
-    // cria um link temporário e clica nele
-    const a = document.createElement('a');
-    a.href = urlDownload;
-    a.download = nomeArquivo;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+      // Baixa via blob: força o SALVAMENTO do arquivo em vez de abrir
+      // a imagem numa aba. Necessário porque a imagem vem do Supabase
+      // (domínio diferente), e nesse caso o atributo `download` do <a>
+      // é ignorado pelo navegador — ele só abriria a imagem.
+      const resposta = await fetch(urlDownload);
+      const blob = await resposta.blob();
+      const urlBlob = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = urlBlob;
+      a.download = nomeArquivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // libera a memória do blob
+      URL.revokeObjectURL(urlBlob);
+    } catch {
+      // Se o fetch falhar (ex: CORS), cai no método simples como último recurso
+      const a = document.createElement('a');
+      a.href = urlDownload;
+      a.download = nomeArquivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
 
     // evento de download (GA / Meta, se existirem)
     if (typeof window !== 'undefined') {
@@ -114,7 +132,7 @@ export default function PopupOfertaDownload({
     setTimeout(() => {
       setBaixando(false);
       setAberto(false);
-    }, 800);
+    }, 600);
   }, [urlDownload, nomeArquivo, personagem]);
 
   // ---- Abre o popup em vez de baixar direto ----
