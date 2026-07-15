@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { ChevronRight, Home as HomeIcon } from 'lucide-react';
 import { fetchDesenhoById, fetchDesenhosRelacionados } from '@/lib/algolia';
-import { DesenhoActions } from '@/components/DesenhoActions';
 import { DesenhoCard } from '@/components/DesenhoCard';
 import { OfertaCard } from '@/components/OfertaCard';
 import { capitalize, formatarNome, resolverAltDesenho } from '@/lib/utils';
