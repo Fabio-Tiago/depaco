@@ -11,6 +11,7 @@ import { capitalize, formatarNome, resolverAltDesenho } from '@/lib/utils';
 import type { AlgoliaDesenhoRecord } from '@/types';
 import { resolvePack } from '@/lib/oferta';
 import PopupOfertaDownload from '@/components/PopupOfertaDownload';
+import BotaoCompartilhar from '@/components/BotaoCompartilhar';
 
 
 interface PageProps {
@@ -171,6 +172,12 @@ export default async function DesenhoPage({ params }: PageProps) {
                   tipo_item: 'desenhos',
                 }}
                 className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-coral text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky hover:-translate-y-1 transition-all"
+              />
+              <BotaoCompartilhar
+                url={`${process.env.NEXT_PUBLIC_SITE_URL}/desenhos/${id}`}
+                personagem={personagem}
+                urlImagem={desenho.url_imagem}
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-sky text-ink rounded-2xl font-bold border-2 border-ink shadow-chunky hover:-translate-y-1 transition-all"
               />
             </div>
 
