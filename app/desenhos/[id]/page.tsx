@@ -157,28 +157,28 @@ export default async function DesenhoPage({ params }: PageProps) {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              //<DesenhoActions imageUrl={desenho.url_imagem || ''} filename={filename} />
-              <PopupOfertaDownload
-                urlDownload={desenho.url_imagem || ''}
-                nomeArquivo={filename}
-                personagem={personagem}
-                pack={{
-                  id: pack.id,
-                  nome: pack.nome,
-                  total_desenhos: pack.total_desenhos,
-                  preco: pack.preco,
-                  preco_de: pack.preco_de,
-                  url_checkout: pack.url_checkout,
-                  tipo_item: 'desenhos',
-                }}
-                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-coral text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky hover:-translate-y-1 transition-all"
-              />
-              <BotaoCompartilhar
-                url={`${process.env.NEXT_PUBLIC_SITE_URL}/desenhos/${id}`}
-                personagem={personagem}
-                urlImagem={desenho.url_imagem}
-                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-sky text-ink rounded-2xl font-bold border-2 border-ink shadow-chunky hover:-translate-y-1 transition-all"
-              />
+                <PopupOfertaDownload
+                  urlDownload={desenho.url_imagem || ''}
+                  nomeArquivo={filename}
+                  personagem={personagem}
+                  pack={{
+                    id: pack.id,
+                    nome: pack.nome,
+                    total_desenhos: pack.total_desenhos,
+                    preco: pack.preco,
+                    preco_de: pack.preco_de,
+                    url_checkout: pack.url_checkout,
+                    tipo_item: 'desenhos',
+                  }}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-coral text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky hover:-translate-y-1 transition-all"
+                />
+              
+                <BotaoCompartilhar
+                  url={`${process.env.NEXT_PUBLIC_SITE_URL}/desenhos/${id}`}
+                  personagem={personagem}
+                  urlImagem={desenho.url_imagem}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-sky text-ink rounded-2xl font-bold border-2 border-ink shadow-chunky hover:-translate-y-1 transition-all"
+                />
             </div>
 
             {/* Texto SEO — descrição do desenho */}
