@@ -182,7 +182,7 @@ export default function BotaoCompartilhar({
       {/* Botão principal */}
       <button
         type="button"
-        onClick={temShareNativo ? compartilharNativo : () => setMenuAberto(true)}
+        onClick={() => setMenuAberto(true)}
         className={className}
         aria-label="Compartilhar este desenho"
       >
@@ -260,6 +260,20 @@ export default function BotaoCompartilhar({
               💡 Para Instagram, TikTok ou Stories, salve a imagem e
               publique pelo app.
             </p>
+
+            {/* Menu do celular (WhatsApp, Insta, TikTok, tudo) — só no
+                celular, onde navigator.share existe */}
+            {temShareNativo && (
+              <button
+                type="button"
+                onClick={() => { setMenuAberto(false); compartilharNativo(); }}
+                className="mb-3 flex w-full items-center justify-center gap-2 rounded-2xl border-2 py-3 font-bold transition hover:opacity-80"
+                style={{ borderColor: CORES.ink, backgroundColor: CORES.coral, color: CORES.cream }}
+              >
+                <Share2 className="w-4 h-4" aria-hidden="true" />
+                Mais opções do celular
+              </button>
+            )}
 
             {/* Copiar link */}
             <button
