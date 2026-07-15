@@ -35,6 +35,9 @@ interface PopupOfertaDownloadProps {
     preco: number;
     preco_de?: number;
     url_checkout: string;
+    /** O que o pack contém, no plural. Ex: "desenhos", "atividades",
+     *  "materiais". Deixa a oferta certa pra cada tipo de pack. */
+    tipo_item?: string;
   };
   /** Classe do botão de download (para casar com o design da página) */
   className?: string;
@@ -76,6 +79,10 @@ export default function PopupOfertaDownload({
     pack.preco_de && pack.preco_de > pack.preco
       ? Math.round(((pack.preco_de - pack.preco) / pack.preco_de) * 100)
       : 0;
+
+  // O que o pack contém, no plural. Cai em "desenhos" se não vier nada,
+  // para o pack de desenhos continuar funcionando sem mudar nada.
+  const itemPlural = pack.tipo_item || 'desenhos';
 
   // ---- Dispara o download de fato ----
   const baixarDesenho = useCallback(() => {
@@ -237,18 +244,18 @@ export default function PopupOfertaDownload({
                 className="mt-4 text-2xl font-extrabold leading-tight"
                 style={{ color: CORES.ink }}
               >
-                Cansada de baixar um desenho por vez?
+                Cansada de baixar um por vez?
               </h2>
 
               <p className="mt-2 text-base" style={{ color: CORES.ink }}>
-                Leve <strong>{pack.total_desenhos} desenhos</strong> de uma vez
-                e nunca mais perca tempo procurando e baixando um por um.
+                Leve <strong>{pack.total_desenhos} {itemPlural}</strong> de uma
+                vez e nunca mais perca tempo procurando e baixando um por um.
               </p>
 
               {/* Benefícios */}
               <ul className="mt-5 space-y-2">
                 {[
-                  `${pack.total_desenhos} desenhos prontos para imprimir`,
+                  `${pack.total_desenhos} ${itemPlural} prontos para imprimir`,
                   'Baixa tudo de uma vez, num único arquivo',
                   'Organizados por tema, fáceis de achar',
                   'Acesso imediato após o pagamento',
