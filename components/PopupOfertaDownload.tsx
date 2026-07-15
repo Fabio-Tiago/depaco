@@ -207,8 +207,7 @@ export default function PopupOfertaDownload({
           {/* Cartão da oferta */}
           <div
             ref={dialogRef}
-            className="relative w-full max-w-md rounded-3xl border-[3px] shadow-2xl
-                       animate-[popIn_0.25s_ease-out]"
+            className="relative w-full max-w-md rounded-3xl border-[3px] shadow-2xl animate-[popIn_0.25s_ease-out]"
             style={{
               backgroundColor: CORES.cream,
               borderColor: CORES.ink,
@@ -219,8 +218,7 @@ export default function PopupOfertaDownload({
               ref={fecharRef}
               type="button"
               onClick={() => setAberto(false)}
-              className="absolute right-4 top-4 z-10 rounded-full p-1.5
-                         transition hover:scale-110"
+              className="absolute right-4 top-4 z-10 rounded-full p-1.5 transition hover:scale-110"
               style={{ backgroundColor: CORES.ink, color: CORES.cream }}
               aria-label="Fechar oferta"
             >
@@ -230,8 +228,7 @@ export default function PopupOfertaDownload({
             <div className="p-7 pt-9">
               {/* Selo */}
               <div
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1
-                           text-xs font-bold uppercase tracking-wide"
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide"
                 style={{ backgroundColor: CORES.mostarda, color: CORES.ink }}
               >
                 <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
@@ -266,8 +263,7 @@ export default function PopupOfertaDownload({
                     style={{ color: CORES.ink }}
                   >
                     <span
-                      className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center
-                                 justify-center rounded-full"
+                      className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full"
                       style={{ backgroundColor: CORES.sky }}
                     >
                       <Check className="w-3 h-3" style={{ color: CORES.ink }} aria-hidden="true" />
@@ -307,9 +303,7 @@ export default function PopupOfertaDownload({
               <Link
                 href={`/pack/${pack.id}#checkout`}
                 onClick={irParaPack}
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl
-                           border-[3px] py-4 text-base font-extrabold transition
-                           hover:translate-y-[-2px] hover:shadow-lg"
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border-[3px] py-4 text-base font-extrabold transition hover:translate-y-[-2px] hover:shadow-lg"
                 style={{
                   backgroundColor: CORES.coral,
                   borderColor: CORES.ink,
@@ -325,9 +319,7 @@ export default function PopupOfertaDownload({
                 type="button"
                 onClick={baixarDesenho}
                 disabled={baixando}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl
-                           py-3 text-sm font-medium transition hover:opacity-70
-                           disabled:opacity-40"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-medium transition hover:opacity-70 disabled:opacity-40"
                 style={{ color: CORES.ink }}
               >
                 {baixando ? (
