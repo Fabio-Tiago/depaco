@@ -157,7 +157,7 @@ export default async function DesenhoPage({ params }: PageProps) {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <DesenhoActions imageUrl={desenho.url_imagem || ''} filename={filename} />
+              //<DesenhoActions imageUrl={desenho.url_imagem || ''} filename={filename} />
               <PopupOfertaDownload
                 urlDownload={desenho.url_imagem || ''}
                 nomeArquivo={filename}
