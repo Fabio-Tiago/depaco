@@ -29,6 +29,7 @@ export function Header() {
             >
               Ver desenhos
             </Link>
+            <Link href="/atividades-educativas">Atividades</Link>
             <Link
               href="/blog"
               className="px-3 py-2 rounded-lg hover:bg-mustard-100 hover:text-ink transition-colors"
