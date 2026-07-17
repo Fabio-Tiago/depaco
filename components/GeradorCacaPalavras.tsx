@@ -10,7 +10,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
  *
  * Serve a dois objetivos:
  *   - Retenção/SEO: a pessoa joga, fica na página, engaja.
- *   - Venda: ao imprimir, aparece a oferta do mega pack.
+ *   - Venda: ao baixar, aparece a oferta do mega pack.
  *
  * Este componente é o MOLDE dos próximos geradores (labirinto,
  * complete o versículo, etc). A lógica do algoritmo foi portada
@@ -217,21 +217,98 @@ export default function GeradorCacaPalavras() {
 
   const completou = achadas.size === colocadas.length && colocadas.length > 0;
 
-  // ---- Imprimir: dispara o popup da oferta ----
-  const aoImprimir = () => {
-    // evento para o site abrir o PopupOfertaDownload
-    if (typeof window !== 'undefined') {
-      const w = window as unknown as {
-        abrirOfertaPack?: () => void;
-        gtag?: (...a: unknown[]) => void;
-      };
-      w.gtag?.('event', 'imprimir_atividade', { tipo: 'caca-palavras', tema });
-      if (w.abrirOfertaPack) {
-        w.abrirOfertaPack();     // o site decide mostrar a oferta
-      } else {
-        window.print();          // fallback: imprime direto
+  // ---- Baixar: gera o PDF da atividade e dispara a oferta ----
+  // No celular, "baixar" é o gesto natural — a pessoa salva o
+  // arquivo e imprime depois. Por isso não usamos window.print().
+  const aoBaixar = () => {
+    if (typeof window === 'undefined') return;
+
+    const w = window as unknown as {
+      abrirOfertaPack?: () => void;
+      gtag?: (...a: unknown[]) => void;
+    };
+    w.gtag?.('event', 'baixar_atividade', { tipo: 'caca-palavras', tema });
+
+    // gera o PDF da grade + lista de palavras e baixa o arquivo
+    gerarPdf();
+
+    // e mostra a oferta do pack (se o site tiver ligado)
+    if (w.abrirOfertaPack) w.abrirOfertaPack();
+  };
+
+  // monta o PDF da atividade usando o canvas e força o download
+  const gerarPdf = () => {
+    // desenha a grade num canvas e converte em imagem para o PDF
+    const canvas = document.createElement('canvas');
+    const escala = 40;
+    const margem = 40;
+    const alturaTopo = 80;
+    const alturaLista = 120;
+    canvas.width = tamanho * escala + margem * 2;
+    canvas.height = tamanho * escala + margem * 2 + alturaTopo + alturaLista;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // fundo branco
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // título
+    ctx.fillStyle = '#1F1F1F';
+    ctx.font = 'bold 28px sans-serif';
+    ctx.fillText(`Caça-Palavras: ${tema}`, margem, 45);
+
+    // grade
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let l = 0; l < tamanho; l++) {
+      for (let c = 0; c < tamanho; c++) {
+        const x = margem + c * escala + escala / 2;
+        const y = alturaTopo + margem + l * escala + escala / 2;
+        ctx.strokeStyle = '#DDDDDD';
+        ctx.strokeRect(margem + c * escala, alturaTopo + margem + l * escala, escala, escala);
+        ctx.fillStyle = '#1F1F1F';
+        ctx.fillText(grade[l][c], x, y);
       }
     }
+
+    // lista de palavras
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 18px sans-serif';
+    const baseY = alturaTopo + margem + tamanho * escala + 35;
+    ctx.fillText('Encontre:', margem, baseY);
+    ctx.font = '16px sans-serif';
+    let lx = margem;
+    let ly = baseY + 28;
+    colocadas.forEach((p) => {
+      const larg = ctx.measureText(p).width + 30;
+      if (lx + larg > canvas.width - margem) { lx = margem; ly += 26; }
+      ctx.fillText(p, lx, ly);
+      lx += larg;
+    });
+
+    // converte pra PDF simples (uma imagem A4) e baixa
+    const img = canvas.toDataURL('image/png');
+    const win = window.open('', '_blank');
+    // fallback: se popup bloqueado, baixa como PNG direto
+    if (!win) {
+      const a = document.createElement('a');
+      a.href = img;
+      a.download = `caca-palavras-${tema.toLowerCase().replace(/\s+/g, '-')}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return;
+    }
+    win.document.write(`<img src="${img}" style="width:100%"/>`);
+    // baixa como PNG (nome amigável)
+    const a = document.createElement('a');
+    a.href = img;
+    a.download = `caca-palavras-${tema.toLowerCase().replace(/\s+/g, '-')}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   return (
@@ -288,14 +365,14 @@ export default function GeradorCacaPalavras() {
         </button>
 
         <button
-          onClick={aoImprimir}
+          onClick={aoBaixar}
           style={{
             padding: '11px 18px', borderRadius: '12px', border: `2px solid ${C.ink}`,
             background: C.coral, color: C.cream, fontWeight: 700, fontSize: '15px',
             cursor: 'pointer', marginLeft: 'auto',
           }}
         >
-          🖨️ Imprimir
+          ⬇️ Baixar
         </button>
       </div>
 
@@ -387,7 +464,7 @@ export default function GeradorCacaPalavras() {
                 Você achou todas as palavras!
               </div>
               <button
-                onClick={aoImprimir}
+                onClick={aoBaixar}
                 style={{
                   marginTop: '12px', padding: '10px 20px', borderRadius: '12px',
                   border: `2px solid ${C.ink}`, background: C.coral, color: C.cream,
