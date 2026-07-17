@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ChevronRight, Home as HomeIcon } from 'lucide-react';
 import { getAtividadeById, getAtividadesPorTipo, ATIVIDADES } from '@/lib/atividades-data';
 import GeradorCacaPalavras from '@/components/GeradorCacaPalavras';
+import GeradorLabirinto from '@/components/GeradorLabirinto';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -81,21 +82,24 @@ export default async function AtividadePage({ params }: PageProps) {
         {/* Título */}
         <h1 className="font-display text-3xl md:text-5xl font-bold text-ink leading-tight mb-3">
           {a.tipo_nome} de {a.tema}{' '}
-          <span className="text-coral">para imprimir</span>
+          <span className="text-coral">para baixar</span>
         </h1>
         <p className="text-lg text-ink/70 mb-8 max-w-2xl">{a.meta_desc}</p>
 
-        {/* A ferramenta — por enquanto só caça-palavras é jogável;
-            os outros tipos mostram a versão imprimível. */}
+        {/* A ferramenta — escolhe o gerador conforme o tipo.
+            Caça-palavras e labirinto são jogáveis; os outros
+            mostram um botão de baixar (versão imprimível). */}
         {a.tipo === 'caca-palavras' ? (
           <GeradorCacaPalavras />
+        ) : a.tipo === 'labirinto' ? (
+          <GeradorLabirinto />
         ) : (
           <div className="rounded-3xl border-[3px] border-ink bg-cream p-8 text-center shadow-chunky">
             <p className="text-lg font-bold text-ink mb-4">
-              {a.tipo_nome} de {a.tema} pronto para imprimir
+              {a.tipo_nome} de {a.tema} pronto para baixar
             </p>
             <button className="inline-flex items-center gap-2 px-8 py-4 bg-coral text-cream rounded-2xl font-bold border-2 border-ink shadow-chunky hover:-translate-y-1 transition-all">
-              🖨️ Imprimir atividade
+              ⬇️ Baixar atividade
             </button>
           </div>
         )}
@@ -109,7 +113,7 @@ export default async function AtividadePage({ params }: PageProps) {
               </h2>
               <p className="text-ink/80 leading-relaxed">
                 {a.tipo_nome}, caça-palavras, cruzadinhas, labirintos e muito mais —
-                organizados por idade e prontos para imprimir.
+                organizados por idade e prontos para baixar.
               </p>
             </div>
             <Link
@@ -132,7 +136,7 @@ export default async function AtividadePage({ params }: PageProps) {
             Como usar
           </h2>
           <ol className="list-decimal list-inside space-y-1 text-ink/80">
-            <li>Clique em imprimir para gerar a atividade em PDF</li>
+            <li>Clique em baixar para salvar a atividade no seu aparelho</li>
             <li>Imprima em folha A4 comum</li>
             <li>Entregue para a criança com lápis ou canetinha</li>
             <li>Acompanhe e ajude quando precisar</li>
@@ -143,7 +147,7 @@ export default async function AtividadePage({ params }: PageProps) {
         {relacionadas.length > 0 && (
           <section className="mt-12">
             <h2 className="font-display text-2xl font-bold text-ink mb-4">
-              Mais {a.tipo_nome.toLowerCase()} para imprimir
+              Mais {a.tipo_nome.toLowerCase()} para baixar
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {relacionadas.map((r) => (
